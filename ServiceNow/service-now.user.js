@@ -3,26 +3,27 @@
 // @namespace   https://github.com/FiggChristian/PTS-Scripts
 // @match       *://stanford.service-now.com/ticket.do*
 // @match       *://stanford.service-now.com/incident.do*
-// @version     1.0
+// @version     1.1
 // @description Adds macros, replacements, and Markdown support to ServiceNow tickets.
+// @icon        https://stanford.service-now.com/stanford_favicon.png
 // @downloadURL https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/master/ServiceNow/service-now.user.js
 // @updateURL   https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/master/ServiceNow/service-now.user.js
 // @supportURL  https://github.com/FiggChristian/PTS-Scripts/issues
+// @homepageURL https://github.com/FiggChristian/PTS-Scripts/
 // @require     https://cdn.jsdelivr.net/npm/marked/marked.min.js
+// @run-at      document-end
 // ==/UserScript==
 
-// To make your own macros, look at line 28.
-// To make your own {{text replacements}}, look at line 224.
+// To make your own macros, look at line 29.
+// To make your own {{text replacements}}, look at line 253.
 
-!function() {
+!function (PUBLIC, PRIVATE) {
     "use strict";
     const MAX_RECURSION_DEPTH = 10; // How many times we should expand a replacement inside a replacement inside a replacement...
     const START_DELIMITER = "{{"; // The text to delimit the start of a replacement. Zendesk's default is "{{"
     const END_DELIMITER = "}}"; // The text to delimit the end of a replacement.
     const AUTOFILL_REPLACEMENT = true; // Whether choosing a replacement from the menu will insert the entire replacement (vs. just the name)
-
-    const PUBLIC = Symbol.for("PUBLIC"); // Ignore
-    const PRIVATE = Symbol.for("PRIVATE"); // Ignore
+    const NETDB_HOST = "netdb-backup.stanford.edu"; // NetDB host name; allowed values: netdb.stanford.edu | netdb-backup.stanford.edu | netdb-dev.stanford.edu | netdb-tng.stanford.edu
 
     const MACROS = [
         // {
@@ -37,7 +38,7 @@
         //         Feel free to include Markdown, like **bold**, *italics*, [links](https://google.com), etc.
 
         //         You can also choose where you want your cursor to end up at once you insert a macro:
-                
+
         //         ${CURSOR("Selected text")}
 
         //         Once you insert this macro, your cursor will be selecting the line above that says "Selected text", allowing you to edit it from there.
@@ -90,7 +91,7 @@
             type: PUBLIC
         },
         {
-            name: "IPRequest Directions",
+            name: "Register via IPRequest",
             value: `
                 Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
 
@@ -112,7 +113,8 @@
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Gives the user step-by-step instructions for registering a device through IPRequest."
+            description: "Gives the user step-by-step instructions for registering a device through IPRequest.",
+            type: PUBLIC
         },
         {
             name: "Bad WiFi Connection",
@@ -129,6 +131,33 @@
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
             description: "Asks the user for more information when their WiFi is bad.",
+            type: PUBLIC
+        },
+        {
+            name: "Register Router",
+            value: `
+                Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
+
+                Please follow the steps below for setting up your own router:
+                
+                1. Purchase a router. Most major router brands (e.g. TP-Link, NETGEAR, ASUS, Linksys, Google, etc.) should do, so feel free to choose one that best suits your needs and price point.
+                2. Once you have the router, look for its MAC address, which is usually printed on the side. It should be 12 alphanumeric digits in the form of \`A1:B2:C3:D4:E5:F6\`.
+                3. Once you've found the MAC address, go to ${START_DELIMITER}link.iprequest${END_DELIMITER} on your computer (make sure the computer you're using is connected to the Stanford network, **not** the router's network).
+                4. Fill out the short questionnaire and continue to your registrations.
+                5. Click the **New Registration** button at the bottom.
+                6. Continue through the terms and conditions until it asks whether the computer you are currently staring at is the one you want to register. Select **No**.
+                7. From the Device Type list, choose **Other** if it is not listed.
+                8. For the Operating System, choose **Other (Wired)**.
+                9. Under Hardware Address, copy and paste the MAC address you found in Step 2.
+                9. Continue through the registration, filling out any details it asks for.
+                10. Once registered, please unplug the router for at least two minutes, as routers tend to not want to update their settings unless they remain unplugged for a bit of time. After 20 or so minutes, your router should be able to connect to the internet, allowing you to connect other devices to the router's network.
+                
+                Please let us know if you have any questions or issues.
+                
+                Best,
+                ${START_DELIMITER}current_user.name.first${END_DELIMITER}
+            `,
+            description: "Gives the user step-by-step instructions for setting up a router.",
             type: PUBLIC
         },
         {
@@ -298,7 +327,7 @@
                 if (input) {
                     let number = input.value.replace(/\D/g, "");
                     if (number.length == 10) {
-                        return `(${number.substring(0,3)}) ${number.substring(3,6)}-${number.substring(6,10)}`;
+                        return `(${number.substring(0, 3)}) ${number.substring(3, 6)}-${number.substring(6, 10)}`;
                     } else {
                         return input.value;
                     }
@@ -487,7 +516,7 @@
             triggers: [
                 "link.vpn"
             ],
-            value :`https://uit.stanford.edu/service/vpn`,
+            value: `https://uit.stanford.edu/service/vpn`,
             description: "Link to Stanford VPN page for all devices"
         },
         {
@@ -495,7 +524,7 @@
                 "link.vpn.mac",
                 "link.vpn.macbook",
                 "link.vpn.macos",
-                "link.von.osx"
+                "link.vpn.osx"
             ],
             value: `https://web.stanford.edu/dept/its/support/vpn/installers/InstallAnyConnect.pkg`,
             description: "Link to download VPN for MacBooks"
@@ -507,6 +536,88 @@
             ],
             value: `https://web.stanford.edu/dept/its/support/vpn/installers/InstallAnyConnect.exe`,
             description: "Link to download VPN for Windows PCs"
+        },
+        {
+            triggers: [
+                "link.vlre"
+            ],
+            value: `https://uit.stanford.edu/service/vlre`,
+            description: "Link to download VLRE for all devices"
+        },
+        {
+            triggers: [
+                "link.vlre.mac",
+                "link.vlre.macbook",
+                "link.vlre.macos",
+                "link.vlre.osx"
+            ],
+            value: `https://uit.stanford.edu/service/vlre/mac`,
+            description: "Link to download VLRE for MacBooks"
+        },
+        {
+            triggers: [
+                "link.vlre.windows",
+                "link.vlre.pc"
+            ],
+            value: `https://uit.stanford.edu/service/vlre/windows`,
+            description: "Link to download VLRE for Windows PCs"
+        },
+        {
+            triggers: [
+                "link.cardinal_key",
+                "link.cardinalkey"
+            ],
+            value: `https://uit.stanford.edu/service/cardinalkey`,
+            description: "Link to download Cardinal Key for all devices"
+        },
+        {
+            triggers: [
+                "link.cardinal_key.mac",
+                "link.cardinal_key.macbook",
+                "link.cardinal_key.macos",
+                "link.cardinal_key.osx",
+                "link.cardinalkey.mac",
+                "link.cardinalkey.macbook",
+                "link.cardinalkey.macos",
+                "link.cardinalkey.osx"
+            ],
+            value: `https://uit.stanford.edu/service/cardinalkey/install_mac`,
+            description: "Link to download Cardinal Key for MacBooks"
+        },
+        {
+            triggers: [
+                "link.cardinal_key.windows",
+                "link.cardinal_key.pc",
+                "link.cardinalkey.windows",
+                "link.cardinalkey.pc"
+            ],
+            value: `https://uit.stanford.edu/service/cardinalkey/install_windows`,
+            description: "Link to download Cardinal Key for Windows PCs"
+        },
+        {
+            triggers: [
+                "link.ssrt"
+            ],
+            value: `https://uit.stanford.edu/software/ssrt`,
+            description: "Link to download SSRT for all devices"
+        },
+        {
+            triggers: [
+                "link.ssrt.mac",
+                "link.ssrt.macbook",
+                "link.ssrt.macos",
+                "link.ssrt.osx"
+            ],
+            value: `https://web.stanford.edu/dept/its/support/ess/mac/unrestricted/SSRT.pkg`,
+            description: "Link to download SSRT for MacBooks"
+        },
+        {
+            triggers: [
+                "link.ssrt.windows",
+                "link.ssrt.pc"
+            ],
+            value: `https://web.stanford.edu/dept/its/support/ess/pc/unrestricted/RunSSRT.exe`,
+            description: "Link to download SSRT for Windows PCs"
         },
         {
             triggers: [
@@ -590,7 +701,7 @@
         if (typeof macro.description != "string") {
             macro.description = typeof macro.value == "function" ?
                 "<i>No description</i>" :
-                [Symbol.for("truncated-description"), sanitizeHTML(macro.value) + ""];
+                [Symbol.for("truncated-description"), escapeHTML(macro.value) + ""];
         } else {
             macro.description = dedent(macro.description);
         }
@@ -640,7 +751,7 @@
             }
             replacement.description = typeof replacement.value == "function" ?
                 "<i>No description</i>" :
-                [Symbol.for("truncated-description"), sanitizeHTML(replacement.value) + ""];
+                [Symbol.for("truncated-description"), escapeHTML(replacement.value) + ""];
         } else {
             replacement.description = dedent(replacement.description);
         }
@@ -674,7 +785,7 @@
             text = text.substring(startIndex + 6);
             // Keep track of the text inside the current code block.
             let codeBlock = "";
-            
+
             // Keep track of how many nested "[code] ... [/code]" blocks we find. Start at 1 since
             // we just found the first "[code]".
             let codeInstances = 1;
@@ -771,64 +882,64 @@
     }
     marked.use({
         renderer: {
-            code: function(code, infostring, escaped) {
+            code: function (code, infostring, escaped) {
                 return `[code]<pre><code>[/code]${code.replace(/\n/g, "[code]<br>[/code]")}[code]</code></pre>[/code]`;
             },
-            blockquote: function(quote) {
+            blockquote: function (quote) {
                 return `[code]<blockquote>[/code]${quote}[code]</blockquote>[/code]`;
             },
             // HTML is treated as plain text instead of trying to render it, so we don't wrap it in
             // [code] ... [/code] blocks.
             // html: function(html) {},
-            heading: function(text, level, raw, slugger) {
+            heading: function (text, level, raw, slugger) {
                 return `[code]<h${level}>[/code]${text}[code]</h${level}>[/code]`;
             },
-            hr: function() {
+            hr: function () {
                 return `[code]<hr/>[/code]`;
             },
-            list: function(body, ordered, start) {
+            list: function (body, ordered, start) {
                 return `[code]<${ordered ? `ol${start == 1 ? "" : ` start="${start}"`}` : "ul"}>[/code]\n${body}[code]</${ordered ? "o" : "u"}l>[/code]`;
             },
-            listitem: function(text, task, checked) {
+            listitem: function (text, task, checked) {
                 return `[code]<li>[/code]${text}[code]</li>[/code]`;
             },
-            checkbox: function(checked) {
+            checkbox: function (checked) {
                 return `[code]<input type="checkbox"${checked ? " checked" : ""}>[/code] `;
             },
-            paragraph: function(text) {
+            paragraph: function (text) {
                 return `[code]<p>[/code]${text}[code]</p>[/code]`;
             },
-            table: function(header, body) {
+            table: function (header, body) {
                 return `[code]<table><thead>[/code]${header}[code]</thead><tbody>[/code]${body}[code]</tbody></table>[/code]`;
             },
-            tablerow: function(content) {
+            tablerow: function (content) {
                 return `[code]<tr>[/code]${content}[code]</tr>[/code]`;
             },
-            tablecell: function(content, flags) {
+            tablecell: function (content, flags) {
                 return `[code]<td${flags.align ? ` style="text-align:${flags.align}"` : ""}>[/code]${content}[code]</td>[/code]`
             },
-            strong: function(text) {
+            strong: function (text) {
                 return `[code]<strong>[/code]${text}[code]</strong>[/code]`;
             },
-            em: function(text) {
+            em: function (text) {
                 return `[code]<em>[/code]${text}[code]</em>[/code]`;
             },
-            codespan: function(code) {
+            codespan: function (code) {
                 return `[code]<code>[/code]${code}[code]</code>[/code]`
             },
-            br: function() {
+            br: function () {
                 return "[code]<br/>[/code]";
             },
-            del: function(text) {
+            del: function (text) {
                 return `[code]<span style="text-decoration:line-through"><del>[/code]${text}[code]</del></span>[/code]`
             },
-            link: function(href, title, text) {
-                return `[code]<a href="${href}"${title ? ` title="${title}"`: ""}>[/code]${text}[code]</a>[/code]`;
+            link: function (href, title, text) {
+                return `[code]<a href="${href}"${title ? ` title="${title}"` : ""}>[/code]${text}[code]</a>[/code]`;
             },
-            image: function(src, title, text) {
+            image: function (src, title, text) {
                 return `[code]<img style="max-width:100%" src="${src}"${text ? ` alt="${text}"` : ""}${title ? ` title="${title}"` : ""}/>[/code]`
             },
-            text: function(text) {
+            text: function (text) {
                 return text.replace(/\n/g, "[code]<br/>[/code]");
             }
         },
@@ -840,11 +951,11 @@
             {
                 name: "codeBlock",
                 level: "inline",
-                start: function(src) {
+                start: function (src) {
                     let index = src.indexOf("[code][/code]");
                     return ~index ? index : src.length;
                 },
-                tokenizer: function(src, tokens) {
+                tokenizer: function (src, tokens) {
                     if (src.startsWith("[code][/code]")) {
                         return {
                             type: "codeBlock",
@@ -853,7 +964,7 @@
                         };
                     } else return false;
                 },
-                renderer: function(token) {
+                renderer: function (token) {
                     if (token.type == "codeBlock") {
                         return token.raw;
                     } else return false;
@@ -945,11 +1056,21 @@
         if (textareaData.element.selectionStart < START_DELIMITER.length) {
             return null;
         }
+
         // Determine if our caret is positioned after a starting delimiter, but not if there is an end-
         // ing delimiter that closes it.
         let startDelimIndex = textareaData.element.value.lastIndexOf(START_DELIMITER, textareaData.element.selectionStart - START_DELIMITER.length);
         let endDelimIndex = textareaData.element.value.lastIndexOf(END_DELIMITER, textareaData.element.selectionStart - 1);
         if (!~startDelimIndex || (~endDelimIndex && startDelimIndex < endDelimIndex)) {
+            return null;
+        }
+
+        // If there is a newline character between the start delimiter and out cursor, we don't want
+        // to show the auto filler because more than likely, the user will still want to use the
+        // up and down arrow keys to move the caret instead of scrolling through the auto filler
+        // menu.
+        let newLineIndex = textareaData.element.value.indexOf("\n", startDelimIndex);
+        if (~newLineIndex && newLineIndex < textareaData.element.selectionStart) {
             return null;
         }
 
@@ -1023,16 +1144,18 @@
         textareaData.autoFiller.style.left =
             Math.min(
                 textareaData.caretLeft,
-                parseFloat(textareaData.mirror.style.width) - 200 
+                parseFloat(textareaData.mirror.style.width) - 200
             ) +
             parseFloat(textareaData.styles.paddingLeft) +
             parseFloat(textareaData.styles.borderLeftWidth) +
-            textareaData.element.offsetLeft + "px";
+            textareaData.element.offsetLeft -
+            textareaData.element.scrollLeft + "px";
         textareaData.autoFiller.style.top =
             textareaData.caretTop +
             parseFloat(textareaData.styles.paddingTop) +
             parseFloat(textareaData.styles.borderTopWidth) +
-            textareaData.element.offsetTop + "px";
+            textareaData.element.offsetTop -
+            textareaData.element.scrollTop + "px";
 
         // Set the autoFiller's artificial focus index to 0 (the first item in the list).
         textareaData.autoFillerFocusedIndex = 0;
@@ -1040,7 +1163,7 @@
         textareaData.autoFilling = true;
     }
 
-    function sanitizeHTML(string) {
+    function escapeHTML(string) {
         return string
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
@@ -1074,29 +1197,47 @@
             newCaretPos = previousStartDelimIndex + START_DELIMITER.length + name.length + (AUTOFILL_REPLACEMENT ? END_DELIMITER.length : 0);
         }
 
-        // Select all the text in the <textarea>.
-        setTextareaValue(textareaData, newValue, true);
-        // Set the selection back to where it should be.
-        textareaData.element.setSelectionRange(newCaretPos, newCaretPos);
-        // Check if there are any new replacements to make.
-        checkReplacements(textareaData);
+        // Call checkReplacements() to evaluate the new value. The text will be inserted into the
+        // textarea in this function call.
+        checkReplacements(textareaData, newValue, newCaretPos);
     }
 
     function setTextareaValue(textareaData, value, suppressInputs) {
+        // If the textarea's data doesn't need to be updated to begin with, don't do anything.
+        if (textareaData.element.value == value) {
+            return;
+        }
         if (suppressInputs) {
             textareaData.suppressInputs = true;
         }
         textareaData.element.focus();
-        if (document.queryCommandSupported("insertHTML") && document.queryCommandEnabled("insertHTML")) {
+
+        // Check if the browser will let us carry out the proper commands.
+        const selectAllAllowed = document.queryCommandSupported("selectAll") && document.queryCommandEnabled("selectAll");
+        const insertHTMLAllowed = document.queryCommandSupported("insertHTML") && document.queryCommandEnabled("insertHTML");
+        const insertTextAllowed = document.queryCommandSupported("insertText") && document.queryCommandEnabled("insertText");
+
+        let hasBeenReplaced = false;
+
+        if (insertHTMLAllowed) {
+            // Call selectAll command instead of selecting the text manually, if allowed.
+            if (!selectAllAllowed || !document.execCommand("selectAll", false)) {
+                textareaData.element.setSelectionRange(0, textareaData.element.value.length);
+            }
+
             // We set the textarea's value using insertHTML to allow for undoing/redoing, and
             // because insertHTML seems to perform much faster than insertText in some browsers.
-            textareaData.element.setSelectionRange(0, textareaData.element.value.length);
-            document.execCommand("insertHTML", false, sanitizeHTML(value) + (value[value.length - 1] == "\n" ? "<br>" : ""));
-        } else if (document.queryCommandSupported("insertText") && document.queryCommandEnabled("insertText")) {
+            hasBeenReplaced = document.execCommand("insertHTML", false, escapeHTML(value) + (value[value.length - 1] == "\n" ? "<br>" : ""));
+        } else if (insertTextAllowed) {
+            if (!selectAllAllowed || !document.execCommand("selectAll", false)) {
+                textareaData.element.setSelectionRange(0, textareaData.element.value.length);
+            }
+
             // Fall back to insertText if insertHTML is not enabled (Firefox).
-            textareaData.element.setSelectionRange(0, textareaData.element.value.length);
-            document.execCommand("insertText", false, value);
-        } else {
+            hasBeenReplaced = document.execCommand("insertText", false, value);
+        }
+
+        if (!hasBeenReplaced) {
             // Set the value directly if all else fails.
             textareaData.value = value;
         }
@@ -1161,6 +1302,12 @@
         // caretPositions may have multiple positions where we can place the caret. For now, we just
         // look at the first one, although this may change in the future.
 
+        // If the textarea's value doesn't need to be updated to begin with, there's no point in
+        // messing with it at all, and we can just return without making any changes.
+        if (textareaData.element.value == value && caretPositions.length == 1) {
+            return;
+        }
+
         setTextareaValue(textareaData, value, true);
         // Set the selection back to where it should be.
         textareaData.element.setSelectionRange(...caretPositions[0]);
@@ -1200,7 +1347,7 @@
             // No trigger with this name; return the value unchanged.
             return [START_DELIMITER + unchanged + END_DELIMITER, false];
         }
-        
+
         // Now that we have the replaced value, we need to check to see if there were any nested
         // replacements.
         let lastIndex = replacement.length;
@@ -1220,11 +1367,11 @@
     }
 
     function populateAutoFiller(textareaData) {
-        let incompleteMacro = getIncompleteTrigger(textareaData).trim().toLowerCase();
+        const incompleteMacro = getIncompleteTrigger(textareaData).trim().toLowerCase();
 
-        let filteredIndices = [];
+        const filteredIndices = [];
         for (let i = 0, l = REPLACEMENTS.length; i < l; i++) {
-            if (REPLACEMENTS[i].mainTrigger.startsWith(incompleteMacro)) {
+            if (REPLACEMENTS[i].mainTrigger.startsWith(incompleteMacro) && (AUTOFILL_REPLACEMENT || REPLACEMENTS[i].mainTrigger != incompleteMacro)) {
                 filteredIndices.push(i)
             }
         }
@@ -1245,19 +1392,18 @@
         textareaData.autoFillerVisibleIndices = filteredIndices;
 
         // Make a fragment where we will add all the results.
-        let fragment = document.createDocumentFragment();
+        const fragment = document.createDocumentFragment();
 
         for (const index of filteredIndices) {
-            let replacement = REPLACEMENTS[index];
+            const replacement = REPLACEMENTS[index];
             // Each entry is a <li>.
-            let li = document.createElement("li");
+            const li = document.createElement("li");
             li.innerHTML = `
                 <div class="sn-card-component_accent-bar"></div>
-                <strong>${START_DELIMITER}${sanitizeHTML(replacement.mainTrigger).replace(/(\.|_)/g, "$1<wbr>") || ""}${END_DELIMITER}</strong>
-                ${
-                    typeof replacement.description == "string" ?
-                        `<small>${replacement.description || '""'}</small>` :
-                        `<small class="${CSS_PREFIX}-desc-flex">"<span>${replacement.description[1]}</span>"</small>`
+                <strong>${START_DELIMITER}${escapeHTML(replacement.mainTrigger).replace(/(\.|_)/g, "$1<wbr>") || ""}${END_DELIMITER}</strong>
+                ${typeof replacement.description == "string" ?
+                    `<small>${replacement.description || '""'}</small>` :
+                    `<small class="${CSS_PREFIX}-desc-flex">"<span>${replacement.description[1]}</span>"</small>`
                 }
             `;
             li.setAttribute(`data-${CSS_PREFIX}-replacement-name`, replacement.mainTrigger);
@@ -1272,11 +1418,11 @@
             li.addEventListener("click", e => selectAutoFillerItem(e, textareaData));
             // Also add a keydown listener for Enter and Spacebar to activate the click listener like
             // how a button would.
-            li.addEventListener("keydown", function(e) {
+            li.addEventListener("keydown", function (e) {
                 if (e.code == "Enter" || e.code == " ") selectAutoFillerItem(e, textareaData);
             });
             // Hover-in listener to left-align the tooltip, as well as make the item highlighted.
-            li.addEventListener("mouseenter", function(e) {
+            li.addEventListener("mouseenter", function (e) {
                 li.setAttribute(`data-${CSS_PREFIX}-hovering`, "true");
                 li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "true");
@@ -1287,7 +1433,7 @@
             });
             // Hover-out listener to make the tooltip return to normal, as well as un-highlight the
             // item.
-            li.addEventListener("mouseleave", function(e) {
+            li.addEventListener("mouseleave", function (e) {
                 li.setAttribute(`data-${CSS_PREFIX}-hovering`, "false");
                 if (li.getAttribute(`data-${CSS_PREFIX}-focusing`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                     li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
@@ -1295,9 +1441,9 @@
 
                     // The tooltip lingers even after hovering out, so we need to wait for the tooltip
                     // to actually disappear before we can return the center alignment is normally has.
-                    let tooltip = document.getElementsByClassName("tooltip")[0];
+                    const tooltip = document.getElementsByClassName("tooltip")[0];
                     if (tooltip) {
-                        new MutationObserver(function(_, self) {
+                        new MutationObserver(function (_, self) {
                             self.disconnect();
                             if (document.documentElement.getAttribute(`data-${CSS_PREFIX}-hovering-auto-filler-option`) != "true") {
                                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "false");
@@ -1311,7 +1457,7 @@
                 }
             });
             // Focusing on the item is treated the same same as hovering in.
-            li.addEventListener("focus", function(e) {
+            li.addEventListener("focus", function (e) {
                 li.setAttribute(`data-${CSS_PREFIX}-focusing`, "true");
                 li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "true");
@@ -1324,14 +1470,14 @@
                 focusAutoFillItem(textareaData);
             });
             // Blurring the item is the same as hovering out.
-            li.addEventListener("blur", function(e) {
+            li.addEventListener("blur", function (e) {
                 li.setAttribute(`data-${CSS_PREFIX}-focusing`, "false");
                 if (li.getAttribute(`data-${CSS_PREFIX}-hovering`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                     li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
                     document.documentElement.setAttribute(`data-${CSS_PREFIX}-hovering-auto-filler-option`, "false");
-                    let tooltip = document.getElementsByClassName("tooltip")[0];
+                    const tooltip = document.getElementsByClassName("tooltip")[0];
                     if (tooltip) {
-                        new MutationObserver(function(_, self) {
+                        new MutationObserver(function (_, self) {
                             self.disconnect();
                             if (document.documentElement.getAttribute(`data-${CSS_PREFIX}-hovering-auto-filler-option`) != "true") {
                                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "false");
@@ -1353,8 +1499,7 @@
     }
 
     function selectMacroItem(e) {
-        let name = e.currentTarget.getAttribute(`data-${CSS_PREFIX}-macro-name`);
-        let macro = _MACROS[name];
+        const macro = _MACROS[e.currentTarget.getAttribute(`data-${CSS_PREFIX}-macro-name`)];
 
         // First get the macro's value.
         let value;
@@ -1370,11 +1515,11 @@
         let textarea = document.getElementById("activity-stream-textarea");
         // .offsetParent can be used to check if the element is actually visible.
         if (textarea && textarea.offsetParent) {
-            let textareaType = textarea.getAttribute("data-stream-text-input");
+            const textareaType = textarea.getAttribute("data-stream-text-input");
             // Check if we need to switch to the other type of <textarea>
             if ((textareaType == "comments" && macro.type == PRIVATE) || (textareaType == "work_notes" && macro.type == PUBLIC)) {
                 // Manually click the checkbox to toggle work notes.
-                let checkbox = document.querySelector(".sn-controls.row .pull-right input[type='checkbox'][name='work_notes-journal-checkbox'], .sn-controls.row .pull-right input[type='checkbox'][name='comments-journal-checkbox']");
+                const checkbox = document.querySelector(".sn-controls.row .pull-right input[type='checkbox'][name='work_notes-journal-checkbox'], .sn-controls.row .pull-right input[type='checkbox'][name='comments-journal-checkbox']");
                 if (checkbox) {
                     checkbox.click();
                 }
@@ -1400,8 +1545,8 @@
     }
 
     function focusMacroItem(macroContainer) {
-        let index = +macroContainer.getAttribute(`data-${CSS_PREFIX}-focused-index`);
-        let children = macroContainer.lastElementChild.children;
+        const index = +macroContainer.getAttribute(`data-${CSS_PREFIX}-focused-index`);
+        const children = macroContainer.lastElementChild.children;
         // If the index is out of bounds, do nothing.
         if (index < 0 || index >= children.length) {
             return;
@@ -1432,9 +1577,9 @@
 
     window.addEventListener("resize", updateTextareas);
 
-    document.addEventListener("input", function(e) {
+    document.addEventListener("input", function (e) {
         updateTextareas();
-        let textareaData = textareaDatas.get(e.target);
+        const textareaData = textareaDatas.get(e.target);
         if (textareaData) {
             if (!textareaData.suppressInputs) {
                 checkReplacements(textareaData);
@@ -1446,13 +1591,265 @@
         }
     });
 
-    document.addEventListener("selectionchange", function(e) {
-        console.log(e)
-        let textareaData = textareaDatas.get(document.activeElement);
+    document.addEventListener("selectionchange", function (e) {
+        const textareaData = textareaDatas.get(document.activeElement);
         if (textareaData) {
             updateTextareaSelection(textareaData);
         }
     });
+
+    const OUIsPopulated = new Promise(function (resolve, reject) {
+        const url = "https://gitlab.com/wireshark/wireshark/-/raw/master/manuf";
+        const xhr = new XMLHttpRequest();
+        // Use allorigins.win to override the CORS policy
+        xhr.open("GET", `https://api.allorigins.win/get?url=${url}`);
+        xhr.addEventListener("readystatechange", function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    // The list of OUIs we will populate.
+                    const OUIs = {};
+                    const response = JSON.parse(this.response).contents;
+                    // Separate the response into lines.
+                    for (let index = 0; ~(index = response.indexOf("\n", index)); index++) {
+                        // If the beginning of this line starts with a "#", it is a comment and we can
+                        // ignore it.
+                        if (response[index + 1] == "#" || response[index + 1] == "\n") {
+                            continue;
+                        }
+                        // Get the line as a standalone string.
+                        const line = response.substring(index + 1, response.indexOf("\n", index + 1));
+                        // Split it by tabs to get the individual components.
+                        const components = line.split("\t");
+                        let slashIndex;
+
+                        // The 0th item is the MAC address prefix. It can be in the form of 6 digits
+                        // or a full MAC address followed by a "/" and number. The number indicates
+                        // how many digits the prefix is.
+                        // E.g., "A1:B2:C3:D4:E5:F6/36" indicates we should look at the first 36/4=9
+                        // digits only.
+                        // A six-digit MAC address is treated as the full six digits.
+                        if (components[0].length == 8) { // 6 digits plus 2 colons
+                            // The 2nd item is the full name of the vendor. The 1st item is the
+                            // shortened name of the vendor. We prefer to use the full name but go
+                            // to the short name when that's not available
+                            OUIs[components[0]] = components[2] || components[1];
+                        } else if (components[0][17] == "/") {
+                            // If we find a prefix length with other than 6, we overwrite the OUI
+                            // for the six digit version with the new length.
+                            let digits = parseInt(components[0].substring(18)) / 4;
+                            let prefix = components[0].substring(0, digits + Math.ceil(digits / 2 - 1));
+                            OUIs[components[0].substring(0, 8)] = prefix.length;
+                            OUIs[prefix] = components[2] || components[1];
+                        } else {
+                            continue;
+                        }
+                    }
+                    resolve(OUIs);
+                } else {
+                    reject(this.response);
+                }
+            }
+        });
+        xhr.send();
+    });
+
+    const MAC_ADDRESS_SPAN_STYLES = `
+        .${CSS_PREFIX}-mac-address-span,
+        .${CSS_PREFIX}-ip-address-span {
+            padding: .5rem;
+            margin: -.5rem;
+            z-index: 2;
+            position: relative;
+        }
+
+        .${CSS_PREFIX}-mac-address-span:hover,
+        .${CSS_PREFIX}-ip-address-span:hover {
+            padding: .75rem 1rem;
+            margin: -.75rem -1rem;
+            z-index: 1;
+        }
+
+        .${CSS_PREFIX}-mac-address-span > :first-child,
+        .${CSS_PREFIX}-ip-address-span > :first-child {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .${CSS_PREFIX}-mac-address-span > :last-child > :first-child,
+        .${CSS_PREFIX}-ip-address-span > :last-child > :first-child {
+            text-decoration: underline;
+            margin: 0;
+            border: 0;
+            padding: 0;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
+            vertical-align: baseline;
+            background: transparent;
+        }
+
+        .${CSS_PREFIX}-mac-address-span > :last-child > :last-child button,
+        .${CSS_PREFIX}-mac-address-span > :last-child > :last-child a,
+        .${CSS_PREFIX}-ip-address-span > :last-child > :last-child button,
+        .${CSS_PREFIX}-ip-address-span > :last-child > :last-child a {
+            text-decoration: underline;
+            color: inherit;
+            margin: 0;
+            border: 0;
+            padding: 0;
+            background: transparent;
+            min-height: initial;
+            min-width: initial;
+            line-height: inherit;
+            font-size: inherit;
+            font-family: inherit;
+            vertical-align: baseline;
+            cursor: pointer;
+        }
+
+        .${CSS_PREFIX}-mac-address-span > :last-child > :last-child,
+        .${CSS_PREFIX}-ip-address-span > :last-child > :last-child {
+            display: none
+        }
+
+        .${CSS_PREFIX}-mac-address-span:hover > :last-child > :last-child,
+        .${CSS_PREFIX}-mac-address-span > :last-child > :first-child:focus ~ :last-child,
+        .${CSS_PREFIX}-mac-address-span > :last-child > :last-child:focus-within,
+        .${CSS_PREFIX}-ip-address-span:hover > :last-child > :last-child,
+        .${CSS_PREFIX}-ip-address-span > :last-child > :first-child:focus ~ :last-child,
+        .${CSS_PREFIX}-ip-address-span > :last-child > :last-child:focus-within {
+            display: inline-block;
+        }
+    `;
+    const MAC_ADDRESS_REGEX = new RegExp(
+        String.raw`\b(?:` +
+        String.raw`[a-f\d]{12}(?![a-f\d])` + "|" + // A1B2C3D4E5F6
+        String.raw`[a-f\d]{4}(?:[-–][a-f\d]{4}){2}` + "|" + // A1B2-C3D4-E5F6 or A1B2–C3D4–E5F6 (hyphen vs. en dash)
+        String.raw`[a-f\d]{4}([^a-z\d\s])[a-f\d]{4}\1[a-f\d]{4}(?!\1?[a-f\d])` + "|" + // A1B2.C3D4.E5F6 (or any other separator)
+        String.raw`[a-f\d]{2}(?:[-–][a-f\d]{2}){5}` + "|" + // A1-B2-C3-D4-E5-F6 or A1–B2–C3–D4–E5–F6
+        String.raw`[a-f\d]{2}([^a-z\d])[a-f\d]{2}(?:\2[a-f\d]{2}){4}` + // A1:B2:C3:D4:E5:F6 (or any other separator)
+        String.raw`)(?!\2?[a-f\d])`, // Can't be followed by more MAC address characters
+        "i"
+    );
+    const IP_ADDRESS_REGEX = /(^|[^.])\b((?:[1-9]?\d|1\d\d|2[0-4]\d|2[0-5][0-5])(?:\.(?:[1-9]?\d|1\d\d|2[0-4]\d|2[0-5][0-5])){3})\b(?!\.\d)/;
+    function replaceMACsAndIPs(node) {
+        if (node.nodeType == Node.TEXT_NODE) {
+            let macAddressMatch;
+            let ipAddressMatch;
+
+            while (true) {
+                macAddressMatch = MAC_ADDRESS_REGEX.exec(node.textContent);
+                ipAddressMatch = IP_ADDRESS_REGEX.exec(node.textContent);
+
+                // Only do the first one.
+                if (macAddressMatch && ipAddressMatch) {
+                    if (macAddressMatch.index < ipAddressMatch) {
+                        ipAddressMatch = null;
+                    } else {
+                        macAddressMatch = null;
+                    }
+                } else if (!macAddressMatch && !ipAddressMatch) {
+                    break;
+                }
+
+                if (macAddressMatch) {
+                    const formatted = macAddressMatch[0].toUpperCase().replace(/[^A-F\d]/g, "").replace(/(.{2})/g, ":$1").substring(1);;
+                    const macSpan = document.createElement("span");
+                    macSpan.classList.add(`${CSS_PREFIX}-mac-address-span`);
+                    macSpan.innerHTML = `<span>${macAddressMatch[0]}</span><span><input value="${macAddressMatch[0]}" readonly/><span>&nbsp;(<button class="btn">Copy</button> | <a target="netdb_search" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Nodes&purge=">Search NetDB</a> | <span style="font-style:italic">Loading OUIs...</span>)</span></span>`;
+
+                    let input = macSpan.lastElementChild.firstElementChild;
+                    input.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        input.focus();
+                        input.select();
+                    });
+
+                    let OUISpan = macSpan.lastElementChild.lastElementChild.lastElementChild;
+                    OUIsPopulated.then(function (OUIs) {
+                        let prefix = formatted.substring(0, 8);
+                        if (!(prefix in OUIs)) {
+                            OUISpan.textContent = "Unregistered OUI";
+                        } else if (typeof OUIs[prefix] == "number") {
+                            prefix = formatted.substring(0, OUIs[prefix]);
+                            if (prefix in OUIs) {
+                                OUISpan.textContent = `OUI: ${OUIs[prefix]}`;
+                                OUISpan.style.fontStyle = "initial";
+                            } else {
+                                OUISpan.textContent = "Unregistered OUI";
+                            }
+                        } else {
+                            OUISpan.textContent = `OUI: ${OUIs[prefix]}`;
+                            OUISpan.style.fontStyle = "initial";
+                        }
+                    }, function () {
+                        OUISpan.textContent = "Couldn't Load OUIs";
+                    });
+
+                    const copySpan = macSpan.lastElementChild.lastElementChild.firstElementChild;
+                    copySpan.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        try {
+                            navigator.clipboard.writeText(formatted);
+                        } catch (e) {
+                            input.focus();
+                            if (!document.execCommand("selectAll", false)) {
+                                input.setSelectionRange(0, input.value.length);
+                            }
+                            document.execCommand("copy", false);
+                        }
+                    });
+
+                    node.parentNode.insertBefore(document.createTextNode(node.textContent.substring(0, macAddressMatch.index)), node);
+                    node.parentNode.insertBefore(macSpan, node);
+                    macSpan.firstElementChild.nextElementSibling.firstElementChild.style.width = macSpan.firstElementChild.getBoundingClientRect().width + "px";
+                    node.textContent = node.textContent.substring(macAddressMatch.index + macAddressMatch[0].length);
+                }
+
+                if (ipAddressMatch) {
+                    let formatted = ipAddressMatch[2];
+                    const ipSpan = document.createElement("span");
+                    ipSpan.classList.add(`${CSS_PREFIX}-ip-address-span`);
+                    ipSpan.innerHTML = `<span>${ipAddressMatch[2]}</span><span><input value="${ipAddressMatch[2]}" readonly/><span>&nbsp;(<button class="btn">Copy</button> | <a target="netdb_search" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Networks&purge=">Search NetDB</a>)</span></span>`;
+
+                    let input = ipSpan.lastElementChild.firstElementChild;
+                    input.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        input.focus();
+                        input.select();
+                    });
+
+                    const copySpan = ipSpan.lastElementChild.lastElementChild.firstElementChild;
+                    copySpan.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        try {
+                            navigator.clipboard.writeText(formatted);
+                        } catch (e) {
+                            input.focus();
+                            if (!document.execCommand("selectAll", false)) {
+                                input.setSelectionRange(0, input.value.length);
+                            }
+                            document.execCommand("copy", false);
+                        }
+                    });
+
+                    node.parentNode.insertBefore(document.createTextNode(node.textContent.substring(0, ipAddressMatch.index + ipAddressMatch[1].length)), node);
+                    node.parentNode.insertBefore(ipSpan, node);
+                    ipSpan.firstElementChild.nextElementSibling.firstElementChild.style.width = ipSpan.firstElementChild.getBoundingClientRect().width + "px";
+                    node.textContent = node.textContent.substring(ipAddressMatch.index + ipAddressMatch[0].length);
+                }
+            }
+        } else if (node.nodeType == Node.ELEMENT_NODE || node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
+            for (let i = node.childNodes.length - 1; i >= 0; i--) {
+                replaceMACsAndIPs(node.childNodes[i]);
+            }
+        }
+    }
 
     function f() {
         let textareaElements = document.querySelectorAll(`textarea:not([data-${CSS_PREFIX}-found-textarea])`);
@@ -1484,8 +1881,8 @@
             markdownPreviewer.classList.add(`${CSS_PREFIX}-textarea-md-preview`, "form-control");
             markdownPreviewer.setAttribute(`data-${CSS_PREFIX}-is-previewing`, "false");
             markdownPreviewer.style.display = "none";
-            let markdownPreviewerRoot = markdownPreviewer.attachShadow({mode: "open"});
-            markdownPreviewerRoot.innerHTML = `<link href="styles/activity_encapsulated.css" rel="stylesheet" type="text/css"><style>:host img{max-width:100%;height:auto;overflow:hidden}</style><div style="max-height:100%;overflow:auto;padding:0 18px"></div>`;
+            let markdownPreviewerRoot = markdownPreviewer.attachShadow({ mode: "open" });
+            markdownPreviewerRoot.innerHTML = `<style>${MAC_ADDRESS_SPAN_STYLES}</style><link href="styles/activity_encapsulated.css" rel="stylesheet" type="text/css"><style>:host img{max-width:100%;height:auto;overflow:hidden}</style><div style="max-height:100%;overflow:auto;padding:0 18px"></div>`;
             textarea.parentNode.insertBefore(markdownPreviewer, textarea.nextElementSibling);
 
             function parentFocusOut(e) {
@@ -1511,20 +1908,20 @@
             };
             textareaDatas.set(textarea, textareaData);
 
-            textarea.addEventListener("keydown", function(e) {
+            textarea.addEventListener("keydown", function (e) {
                 // Only intercept keypresses when the autFiller is open.
                 if (textareaData.autoFilling) {
                     if (e.code == "ArrowDown") {
                         // An arrow down should move the focus down one.
-                        e.preventDefault();
                         if (textareaData.autoFillerFocusedIndex < textareaData.autoFiller.children.length - 1) {
+                            e.preventDefault();
                             textareaData.autoFillerFocusedIndex++;
                             focusAutoFillItem(textareaData);
                         }
                     } else if (e.code == "ArrowUp") {
                         // An arrow up should move the focus up one.
-                        e.preventDefault();
                         if (textareaData.autoFillerFocusedIndex > 0) {
+                            e.preventDefault();
                             textareaData.autoFillerFocusedIndex--;
                             focusAutoFillItem(textareaData);
                         }
@@ -1539,11 +1936,11 @@
                 }
             });
 
-            textarea.addEventListener("mousedown", function(e) {
+            textarea.addEventListener("mousedown", function (e) {
                 updateTextareaSelection(textareaData);
             });
 
-            textarea.addEventListener("mouseup", function(e) {
+            textarea.addEventListener("mouseup", function (e) {
                 updateTextareaSelection(textareaData);
             });
         }
@@ -1553,7 +1950,7 @@
             section.setAttribute(`data-${CSS_PREFIX}-macro-btn-inserted`, "true");
             let macroContainer = document.createElement("span");
             macroContainer.classList.add(`${CSS_PREFIX}-macro-list-container`);
-            macroContainer.addEventListener("keydown", function(e) {
+            macroContainer.addEventListener("keydown", function (e) {
                 if (macroContainer.firstElementChild.getAttribute(`data-${CSS_PREFIX}-list-expanded`) == "true") {
                     let index = +macroContainer.getAttribute(`data-${CSS_PREFIX}-focused-index`);
                     if (e.code == "ArrowDown") {
@@ -1590,7 +1987,7 @@
                     macroContainer.firstElementChild.click();
                 }
             });
-            macroContainer.addEventListener("focusout", function(e) {
+            macroContainer.addEventListener("focusout", function (e) {
                 if (e.relatedTarget === null || (e.relatedTarget instanceof HTMLElement && !macroContainer.contains(e.relatedTarget))) {
                     // Set to true so we can toggle it to false.
                     macroContainer.firstElementChild.setAttribute(`data-${CSS_PREFIX}-list-expanded`, "true");
@@ -1604,7 +2001,7 @@
             btn.setAttribute("type", "button");
             btn.tabIndex = 0;
             btn.innerText = "Apply Macro";
-            btn.addEventListener("mousedown", function(e) {
+            btn.addEventListener("mousedown", function (e) {
                 // The <button> is receiving focus. Safari and Firefox have a bug where a <button> won't
                 // be focused when you click on it
                 // (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#clicking_and_focus)
@@ -1614,7 +2011,7 @@
                     e.preventDefault();
                 }
             });
-            btn.addEventListener("click", function(e) {
+            btn.addEventListener("click", function (e) {
                 let expanded = btn.getAttribute(`data-${CSS_PREFIX}-list-expanded`) != "true";
                 btn.setAttribute(`data-${CSS_PREFIX}-list-expanded`, expanded);
                 if (expanded) {
@@ -1638,11 +2035,10 @@
                 let li = document.createElement("li");
                 li.innerHTML = `
                     <div class="sn-card-component_accent-bar"></div>
-                    <strong>${sanitizeHTML(macro.name).replace(/(\.|_)/g, "$1<wbr>") || "<i>[Empty Name]</i>"}</strong>
-                    ${
-                        typeof macro.description == "string" ?
-                            `<small>${macro.description || '""'}</small>` :
-                            `<small class="${CSS_PREFIX}-desc-flex">"<span>${macro.description[1]}</span>"</small>`
+                    <strong>${escapeHTML(macro.name).replace(/(\.|_)/g, "$1<wbr>") || "<i>[Empty Name]</i>"}</strong>
+                    ${typeof macro.description == "string" ?
+                        `<small>${macro.description || '""'}</small>` :
+                        `<small class="${CSS_PREFIX}-desc-flex">"<span>${macro.description[1]}</span>"</small>`
                     }
                 `;
                 li.setAttribute(`data-${CSS_PREFIX}-macro-name`, macro.name);
@@ -1650,26 +2046,26 @@
                 li.role = "button";
 
                 li.addEventListener("click", selectMacroItem);
-                li.addEventListener("keydown", function(e) {
+                li.addEventListener("keydown", function (e) {
                     if (e.code == "Enter" || e.code == " ") selectMacroItem(e);
                 });
-                li.addEventListener("mouseenter", function(e) {
+                li.addEventListener("mouseenter", function (e) {
                     li.setAttribute(`data-${CSS_PREFIX}-hovering`, "true");
                     li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                 });
-                li.addEventListener("mouseleave", function(e) {
+                li.addEventListener("mouseleave", function (e) {
                     li.setAttribute(`data-${CSS_PREFIX}-hovering`, "false");
                     if (li.getAttribute(`data-${CSS_PREFIX}-focusing`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                         li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
                     }
                 });
-                li.addEventListener("focus", function(e) {
+                li.addEventListener("focus", function (e) {
                     li.setAttribute(`data-${CSS_PREFIX}-focusing`, "true");
                     li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                     macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, Array.prototype.indexOf.call(li.parentNode.children, li));
                     focusMacroItem(macroContainer);
                 });
-                li.addEventListener("blur", function(e) {
+                li.addEventListener("blur", function (e) {
                     li.setAttribute(`data-${CSS_PREFIX}-focusing`, "false");
                     if (li.getAttribute(`data-${CSS_PREFIX}-hovering`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                         li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
@@ -1685,7 +2081,7 @@
         pullRightSections = document.querySelectorAll(`.sn-controls.row .pull-right:not([data-${CSS_PREFIX}-preview-btn-inserted])`);
         for (const section of pullRightSections) {
             section.setAttribute(`data-${CSS_PREFIX}-preview-btn-inserted`, "true");
-            
+
             let postBtn = section.querySelector(".activity-submit");
             if (!postBtn) {
                 continue;
@@ -1696,7 +2092,7 @@
             let prePostBtn = document.createElement("button");
             prePostBtn.classList.add(`${CSS_PREFIX}-prepost-btn`, "btn", "btn-default");
             prePostBtn.innerText = postBtn.innerText
-            prePostBtn.addEventListener("click", function(e) {
+            prePostBtn.addEventListener("click", function (e) {
                 e.preventDefault();
                 // Get the visible textareas.
                 let textareas = [
@@ -1718,8 +2114,12 @@
 
                 // Wait a little bit of time before clicking the post button to ensure the textarea
                 // has had enough time to update.
-                setTimeout(function() {
+                setTimeout(function () {
                     postBtn.click();
+                    let previewBtn = section.querySelector(`.${CSS_PREFIX}-preview-btn[data-${CSS_PREFIX}-is-previewing="true"]`);
+                    if (previewBtn) {
+                        previewBtn.click();
+                    }
                 }, 250);
             });
 
@@ -1728,7 +2128,7 @@
             previewBtn.classList.add(`${CSS_PREFIX}-preview-btn`, "btn", "btn-default");
             previewBtn.innerText = "Preview";
             previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, "false");
-            previewBtn.addEventListener("click", function(e) {
+            previewBtn.addEventListener("click", function (e) {
                 e.preventDefault();
                 let previewing = previewBtn.getAttribute(`data-${CSS_PREFIX}-is-previewing`) != "true";
                 previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, previewing);
@@ -1749,42 +2149,43 @@
                     // Now we have to sanitize all the text outside of [code][/code] blocks, while
                     // leaving text inside [code][/code] blocks as-is.
 
-                    // Most of the code below is taken directly from parseMarkdownText().
-                    let escaped = "";
-                    let startIndex;
-                    while (~(startIndex = parsed.indexOf("[code]"))) {
-                        escaped += sanitizeHTML(parsed.substring(0, startIndex));
-                        parsed = parsed.substring(startIndex + 6);
-                        
-                        let codeInstances = 1;
-                        while (codeInstances) {
-                            let startIndex = parsed.indexOf("[code]");
-                            let endIndex = parsed.indexOf("[/code]");
+                    if (previewing) {
+                        // Most of the code below is taken directly from parseMarkdownText().
+                        let escaped = "";
+                        let startIndex;
+                        while (~(startIndex = parsed.indexOf("[code]"))) {
+                            escaped += escapeHTML(parsed.substring(0, startIndex));
+                            parsed = parsed.substring(startIndex + 6);
 
-                            if (!~endIndex) {
-                                parsed += "[/code]";
-                                continue;
-                            }
+                            let codeInstances = 1;
+                            while (codeInstances) {
+                                let startIndex = parsed.indexOf("[code]");
+                                let endIndex = parsed.indexOf("[/code]");
 
-                            if (~startIndex && startIndex < endIndex) {
-                                escaped += parsed.substring(0, startIndex);
-                                parsed = parsed.substring(startIndex + 6);
-                                codeInstances++;
-                            } else {
-                                escaped += parsed.substring(0, endIndex);
-                                parsed = parsed.substring(endIndex + 7);
-                                codeInstances--;
+                                if (!~endIndex) {
+                                    parsed += "[/code]";
+                                    continue;
+                                }
+
+                                if (~startIndex && startIndex < endIndex) {
+                                    escaped += parsed.substring(0, startIndex);
+                                    parsed = parsed.substring(startIndex + 6);
+                                    codeInstances++;
+                                } else {
+                                    escaped += parsed.substring(0, endIndex);
+                                    parsed = parsed.substring(endIndex + 7);
+                                    codeInstances--;
+                                }
                             }
                         }
-                    }
-                    escaped += sanitizeHTML(parsed);
+                        escaped += escapeHTML(parsed);
 
-                    textareaData.markdownPreviewerRoot.innerHTML = escaped;
-                    textareaData.markdownPreviewer.style.display = previewing ? "block" : "none";
-
-                    if (previewing) {
+                        textareaData.markdownPreviewerRoot.innerHTML = escaped;
+                        textareaData.markdownPreviewer.style.display = "block";
                         textarea.tabIndex = -1;
+                        replaceMACsAndIPs(textareaData.markdownPreviewerRoot);
                     } else {
+                        textareaData.markdownPreviewer.style.display = "none";
                         // For whatever reason, ServiceNow seems to have a bug where a textarea with
                         // tabindex=0 does not allow you to push Enter (???). The cursor just does
                         // not move to a new line when you push Enter, and I don't know why. Instead
@@ -1793,10 +2194,11 @@
                         // 0.
                         textarea.removeAttribute("tabindex");
                     }
+
                     textarea.blur();
                 }
 
-                
+
             });
 
             // Hide the post button away from view and make it un-clickable so that only we can
@@ -1808,6 +2210,19 @@
             section.insertBefore(prePostBtn, postBtn);
             section.insertBefore(previewBtn, prePostBtn);
         }
+
+        let comments = document.querySelectorAll(`.sn-widget-textblock-body:not([data-${CSS_PREFIX}-mac-searched])`);
+        for (const comment of comments) {
+            comment.setAttribute(`data-${CSS_PREFIX}-mac-searched`, "true");
+            if (comment.shadowRoot) {
+                const stylesheet = document.createElement("style");
+                stylesheet.innerHTML = MAC_ADDRESS_SPAN_STYLES;
+                comment.shadowRoot.insertBefore(stylesheet, comment.shadowRoot.firstChild);
+                replaceMACsAndIPs(comment.shadowRoot);
+            } else {
+                replaceMACsAndIPs(comment);
+            }
+        }
     }
     f();
     new MutationObserver(f).observe(document, {
@@ -1815,7 +2230,7 @@
         subtree: true
     });
 
-    let stylesheet = document.createElement("style");
+    const stylesheet = document.createElement("style");
     stylesheet.innerHTML = `
         .${CSS_PREFIX}-auto-filler,
         .${CSS_PREFIX}-macro-list {
@@ -1889,7 +2304,7 @@
         .${CSS_PREFIX}-macro-list {
             right: 0;
             width: 300px !important;
-            max-height: 150px;
+            max-height: 180px;
         }
 
         .${CSS_PREFIX}-preview-btn,
@@ -1915,6 +2330,8 @@
         :root[data-${CSS_PREFIX}-left-align-tooltip="true"] .tooltip-inner {
             text-align: left;
         }
+
+        ${MAC_ADDRESS_SPAN_STYLES}
     `;
     document.head.appendChild(stylesheet);
-}();
+}(Symbol.for("PUBLIC"), Symbol.for("PRIVATE"));

@@ -91,4 +91,4 @@ IP addresses are also recognized and show the option to copy and search in NetDB
 
 The script only work for INC (incident) and SR (support request) tickets on ServiceNow at the moment, just because the TASK tickets have a completely different UI for whatever reason and it makes it not work on those kinds of tickets.
 
-I've tested the script on Chrome, Safari, and Firefox, but if you run into anything that works not-as-expected, let me know or file an issue [here](https://github.com/FiggChristian/PTS-Scripts/issues).
+I've tested the script on Chrome, Safari, and Firefox, but if you run into anything that works not-as-expected, let me know or file an issue [here](https://github.com/FiggChristian/PTS-Scripts/issues). 
