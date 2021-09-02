@@ -1889,6 +1889,7 @@
         .${CSS_PREFIX}-macro-list {
             right: 0;
             width: 300px !important;
+            max-height: 150px;
         }
 
         .${CSS_PREFIX}-preview-btn,
