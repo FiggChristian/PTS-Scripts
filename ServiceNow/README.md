@@ -58,15 +58,17 @@ Some notable ones are:
 
 This is most useful for small shortcuts, like phrases you use a lot or links that you don't want to look up every time you want to use them. Same as for macros: there's no built-in way to add your own, but editing the code is self-explanatory if you look at the comments.
 
-### 4. MAC Address/IP Address Recognition
+### 4. Smart Text Replacement
 
-Zendesk doesn't have this built in, but I think it's helpful enough to add since we deal with MAC addresses and IP addresses enough. MAC addresses and IP addresses in comments are underlined to be easier to spot, and upon hovering on them, provide some extra information. Hovering over a MAC address shows a button to Copy it to the clipboard, a link to search NetDB, and the MAC address's OUI:
+Zendesk doesn't have this built in, but I think it's helpful enough to add since we deal with MAC addresses and IP addresses enough. Some text in ServiceNow comments gets converted to smart text (shows up as underlined), which lets you hover over it for more options/information. Right now, three different things are recognized and converted to smart text:
 
-![MAC Address Recognition](https://github.com/FiggChristian/PTS-Scripts/blob/main/.github/assets/MAC%20Address%20Recognition.gif?raw=true)
+1. NetDB node names in the form of `rescomp-##-######` or `sr##-##########`. Hovering over one brings up the options to Copy, and search in NetDB and IPRequest.
+2. IP addresses. Hovering over one brings up the same options: Copy, Search in NetDB, and Search in IPRequest.
+3. MAC addresses (the most important one). Hovering over one brings up its vendor OUI for quick look up, the option to Copy, and the ability to Search in NetDB, DHCP Log, MyDevices, and IPRequest.
 
-IP addresses are also recognized and show the option to copy and search in NetDB:
+Here are all three in action:
 
-![IP Address Recognition](https://github.com/FiggChristian/PTS-Scripts/blob/main/.github/assets/IP%20Address%20Recognition.gif?raw=true)
+![Smart Text Demo](https://github.com/FiggChristian/PTS-Scripts/blob/main/.github/assets/Smart%20Text%20Demo.mp4?raw=true)
 
 ## How To Get It
 

@@ -17,7 +17,7 @@
 // To make your own macros, look at line 29.
 // To make your own {{text replacements}}, look at line 253.
 
-!function (PUBLIC, PRIVATE) {
+!function(PUBLIC, PRIVATE) {
     "use strict";
     const MAX_RECURSION_DEPTH = 10; // How many times we should expand a replacement inside a replacement inside a replacement...
     const START_DELIMITER = "{{"; // The text to delimit the start of a replacement. Zendesk's default is "{{"
@@ -882,64 +882,64 @@
     }
     marked.use({
         renderer: {
-            code: function (code, infostring, escaped) {
+            code: function(code, infostring, escaped) {
                 return `[code]<pre><code>[/code]${code.replace(/\n/g, "[code]<br>[/code]")}[code]</code></pre>[/code]`;
             },
-            blockquote: function (quote) {
+            blockquote: function(quote) {
                 return `[code]<blockquote>[/code]${quote}[code]</blockquote>[/code]`;
             },
             // HTML is treated as plain text instead of trying to render it, so we don't wrap it in
             // [code] ... [/code] blocks.
             // html: function(html) {},
-            heading: function (text, level, raw, slugger) {
+            heading: function(text, level, raw, slugger) {
                 return `[code]<h${level}>[/code]${text}[code]</h${level}>[/code]`;
             },
-            hr: function () {
+            hr: function() {
                 return `[code]<hr/>[/code]`;
             },
-            list: function (body, ordered, start) {
+            list: function(body, ordered, start) {
                 return `[code]<${ordered ? `ol${start == 1 ? "" : ` start="${start}"`}` : "ul"}>[/code]\n${body}[code]</${ordered ? "o" : "u"}l>[/code]`;
             },
-            listitem: function (text, task, checked) {
+            listitem: function(text, task, checked) {
                 return `[code]<li>[/code]${text}[code]</li>[/code]`;
             },
-            checkbox: function (checked) {
+            checkbox: function(checked) {
                 return `[code]<input type="checkbox"${checked ? " checked" : ""}>[/code] `;
             },
-            paragraph: function (text) {
+            paragraph: function(text) {
                 return `[code]<p>[/code]${text}[code]</p>[/code]`;
             },
-            table: function (header, body) {
+            table: function(header, body) {
                 return `[code]<table><thead>[/code]${header}[code]</thead><tbody>[/code]${body}[code]</tbody></table>[/code]`;
             },
-            tablerow: function (content) {
+            tablerow: function(content) {
                 return `[code]<tr>[/code]${content}[code]</tr>[/code]`;
             },
-            tablecell: function (content, flags) {
+            tablecell: function(content, flags) {
                 return `[code]<td${flags.align ? ` style="text-align:${flags.align}"` : ""}>[/code]${content}[code]</td>[/code]`
             },
-            strong: function (text) {
+            strong: function(text) {
                 return `[code]<strong>[/code]${text}[code]</strong>[/code]`;
             },
-            em: function (text) {
+            em: function(text) {
                 return `[code]<em>[/code]${text}[code]</em>[/code]`;
             },
-            codespan: function (code) {
+            codespan: function(code) {
                 return `[code]<code>[/code]${code}[code]</code>[/code]`
             },
-            br: function () {
+            br: function() {
                 return "[code]<br/>[/code]";
             },
-            del: function (text) {
+            del: function(text) {
                 return `[code]<span style="text-decoration:line-through"><del>[/code]${text}[code]</del></span>[/code]`
             },
-            link: function (href, title, text) {
+            link: function(href, title, text) {
                 return `[code]<a href="${href}"${title ? ` title="${title}"` : ""}>[/code]${text}[code]</a>[/code]`;
             },
-            image: function (src, title, text) {
+            image: function(src, title, text) {
                 return `[code]<img style="max-width:100%" src="${src}"${text ? ` alt="${text}"` : ""}${title ? ` title="${title}"` : ""}/>[/code]`
             },
-            text: function (text) {
+            text: function(text) {
                 return text.replace(/\n/g, "[code]<br/>[/code]");
             }
         },
@@ -951,11 +951,11 @@
             {
                 name: "codeBlock",
                 level: "inline",
-                start: function (src) {
+                start: function(src) {
                     let index = src.indexOf("[code][/code]");
                     return ~index ? index : src.length;
                 },
-                tokenizer: function (src, tokens) {
+                tokenizer: function(src, tokens) {
                     if (src.startsWith("[code][/code]")) {
                         return {
                             type: "codeBlock",
@@ -964,7 +964,7 @@
                         };
                     } else return false;
                 },
-                renderer: function (token) {
+                renderer: function(token) {
                     if (token.type == "codeBlock") {
                         return token.raw;
                     } else return false;
@@ -1418,11 +1418,11 @@
             li.addEventListener("click", e => selectAutoFillerItem(e, textareaData));
             // Also add a keydown listener for Enter and Spacebar to activate the click listener like
             // how a button would.
-            li.addEventListener("keydown", function (e) {
+            li.addEventListener("keydown", function(e) {
                 if (e.code == "Enter" || e.code == " ") selectAutoFillerItem(e, textareaData);
             });
             // Hover-in listener to left-align the tooltip, as well as make the item highlighted.
-            li.addEventListener("mouseenter", function (e) {
+            li.addEventListener("mouseenter", function(e) {
                 li.setAttribute(`data-${CSS_PREFIX}-hovering`, "true");
                 li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "true");
@@ -1433,7 +1433,7 @@
             });
             // Hover-out listener to make the tooltip return to normal, as well as un-highlight the
             // item.
-            li.addEventListener("mouseleave", function (e) {
+            li.addEventListener("mouseleave", function(e) {
                 li.setAttribute(`data-${CSS_PREFIX}-hovering`, "false");
                 if (li.getAttribute(`data-${CSS_PREFIX}-focusing`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                     li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
@@ -1443,7 +1443,7 @@
                     // to actually disappear before we can return the center alignment is normally has.
                     const tooltip = document.getElementsByClassName("tooltip")[0];
                     if (tooltip) {
-                        new MutationObserver(function (_, self) {
+                        new MutationObserver(function(_, self) {
                             self.disconnect();
                             if (document.documentElement.getAttribute(`data-${CSS_PREFIX}-hovering-auto-filler-option`) != "true") {
                                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "false");
@@ -1457,7 +1457,7 @@
                 }
             });
             // Focusing on the item is treated the same same as hovering in.
-            li.addEventListener("focus", function (e) {
+            li.addEventListener("focus", function(e) {
                 li.setAttribute(`data-${CSS_PREFIX}-focusing`, "true");
                 li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "true");
@@ -1470,14 +1470,14 @@
                 focusAutoFillItem(textareaData);
             });
             // Blurring the item is the same as hovering out.
-            li.addEventListener("blur", function (e) {
+            li.addEventListener("blur", function(e) {
                 li.setAttribute(`data-${CSS_PREFIX}-focusing`, "false");
                 if (li.getAttribute(`data-${CSS_PREFIX}-hovering`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                     li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
                     document.documentElement.setAttribute(`data-${CSS_PREFIX}-hovering-auto-filler-option`, "false");
                     const tooltip = document.getElementsByClassName("tooltip")[0];
                     if (tooltip) {
-                        new MutationObserver(function (_, self) {
+                        new MutationObserver(function(_, self) {
                             self.disconnect();
                             if (document.documentElement.getAttribute(`data-${CSS_PREFIX}-hovering-auto-filler-option`) != "true") {
                                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "false");
@@ -1577,7 +1577,7 @@
 
     window.addEventListener("resize", updateTextareas);
 
-    document.addEventListener("input", function (e) {
+    document.addEventListener("input", function(e) {
         updateTextareas();
         const textareaData = textareaDatas.get(e.target);
         if (textareaData) {
@@ -1591,19 +1591,19 @@
         }
     });
 
-    document.addEventListener("selectionchange", function (e) {
+    document.addEventListener("selectionchange", function(e) {
         const textareaData = textareaDatas.get(document.activeElement);
         if (textareaData) {
             updateTextareaSelection(textareaData);
         }
     });
 
-    const OUIsPopulated = new Promise(function (resolve, reject) {
+    const OUIsPopulated = new Promise(function(resolve, reject) {
         const url = "https://gitlab.com/wireshark/wireshark/-/raw/master/manuf";
         const xhr = new XMLHttpRequest();
         // Use allorigins.win to override the CORS policy
         xhr.open("GET", `https://api.allorigins.win/get?url=${url}`);
-        xhr.addEventListener("readystatechange", function () {
+        xhr.addEventListener("readystatechange", function() {
             if (this.readyState == 4) {
                 if (this.status == 200) {
                     // The list of OUIs we will populate.
@@ -1762,14 +1762,14 @@
                     macSpan.innerHTML = `<span>${macAddressMatch[0]}</span><span><input value="${macAddressMatch[0]}" readonly/><span>&nbsp;(<button class="btn">Copy</button> | <a target="netdb_search" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Nodes&purge=">Search NetDB</a> | <span style="font-style:italic">Loading OUIs...</span>)</span></span>`;
 
                     let input = macSpan.lastElementChild.firstElementChild;
-                    input.addEventListener("click", function (e) {
+                    input.addEventListener("click", function(e) {
                         e.preventDefault();
                         input.focus();
                         input.select();
                     });
 
                     let OUISpan = macSpan.lastElementChild.lastElementChild.lastElementChild;
-                    OUIsPopulated.then(function (OUIs) {
+                    OUIsPopulated.then(function(OUIs) {
                         let prefix = formatted.substring(0, 8);
                         if (!(prefix in OUIs)) {
                             OUISpan.textContent = "Unregistered OUI";
@@ -1785,12 +1785,12 @@
                             OUISpan.textContent = `OUI: ${OUIs[prefix]}`;
                             OUISpan.style.fontStyle = "initial";
                         }
-                    }, function () {
+                    }, function() {
                         OUISpan.textContent = "Couldn't Load OUIs";
                     });
 
                     const copySpan = macSpan.lastElementChild.lastElementChild.firstElementChild;
-                    copySpan.addEventListener("click", function (e) {
+                    copySpan.addEventListener("click", function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         try {
@@ -1817,14 +1817,14 @@
                     ipSpan.innerHTML = `<span>${ipAddressMatch[2]}</span><span><input value="${ipAddressMatch[2]}" readonly/><span>&nbsp;(<button class="btn">Copy</button> | <a target="netdb_search" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Networks&purge=">Search NetDB</a>)</span></span>`;
 
                     let input = ipSpan.lastElementChild.firstElementChild;
-                    input.addEventListener("click", function (e) {
+                    input.addEventListener("click", function(e) {
                         e.preventDefault();
                         input.focus();
                         input.select();
                     });
 
                     const copySpan = ipSpan.lastElementChild.lastElementChild.firstElementChild;
-                    copySpan.addEventListener("click", function (e) {
+                    copySpan.addEventListener("click", function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         try {
@@ -1908,7 +1908,7 @@
             };
             textareaDatas.set(textarea, textareaData);
 
-            textarea.addEventListener("keydown", function (e) {
+            textarea.addEventListener("keydown", function(e) {
                 // Only intercept keypresses when the autFiller is open.
                 if (textareaData.autoFilling) {
                     if (e.code == "ArrowDown") {
@@ -1936,11 +1936,11 @@
                 }
             });
 
-            textarea.addEventListener("mousedown", function (e) {
+            textarea.addEventListener("mousedown", function(e) {
                 updateTextareaSelection(textareaData);
             });
 
-            textarea.addEventListener("mouseup", function (e) {
+            textarea.addEventListener("mouseup", function(e) {
                 updateTextareaSelection(textareaData);
             });
         }
@@ -1950,7 +1950,7 @@
             section.setAttribute(`data-${CSS_PREFIX}-macro-btn-inserted`, "true");
             let macroContainer = document.createElement("span");
             macroContainer.classList.add(`${CSS_PREFIX}-macro-list-container`);
-            macroContainer.addEventListener("keydown", function (e) {
+            macroContainer.addEventListener("keydown", function(e) {
                 if (macroContainer.firstElementChild.getAttribute(`data-${CSS_PREFIX}-list-expanded`) == "true") {
                     let index = +macroContainer.getAttribute(`data-${CSS_PREFIX}-focused-index`);
                     if (e.code == "ArrowDown") {
@@ -1987,7 +1987,7 @@
                     macroContainer.firstElementChild.click();
                 }
             });
-            macroContainer.addEventListener("focusout", function (e) {
+            macroContainer.addEventListener("focusout", function(e) {
                 if (e.relatedTarget === null || (e.relatedTarget instanceof HTMLElement && !macroContainer.contains(e.relatedTarget))) {
                     // Set to true so we can toggle it to false.
                     macroContainer.firstElementChild.setAttribute(`data-${CSS_PREFIX}-list-expanded`, "true");
@@ -2001,7 +2001,7 @@
             btn.setAttribute("type", "button");
             btn.tabIndex = 0;
             btn.innerText = "Apply Macro";
-            btn.addEventListener("mousedown", function (e) {
+            btn.addEventListener("mousedown", function(e) {
                 // The <button> is receiving focus. Safari and Firefox have a bug where a <button> won't
                 // be focused when you click on it
                 // (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#clicking_and_focus)
@@ -2011,7 +2011,7 @@
                     e.preventDefault();
                 }
             });
-            btn.addEventListener("click", function (e) {
+            btn.addEventListener("click", function(e) {
                 let expanded = btn.getAttribute(`data-${CSS_PREFIX}-list-expanded`) != "true";
                 btn.setAttribute(`data-${CSS_PREFIX}-list-expanded`, expanded);
                 if (expanded) {
@@ -2046,26 +2046,26 @@
                 li.role = "button";
 
                 li.addEventListener("click", selectMacroItem);
-                li.addEventListener("keydown", function (e) {
+                li.addEventListener("keydown", function(e) {
                     if (e.code == "Enter" || e.code == " ") selectMacroItem(e);
                 });
-                li.addEventListener("mouseenter", function (e) {
+                li.addEventListener("mouseenter", function(e) {
                     li.setAttribute(`data-${CSS_PREFIX}-hovering`, "true");
                     li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                 });
-                li.addEventListener("mouseleave", function (e) {
+                li.addEventListener("mouseleave", function(e) {
                     li.setAttribute(`data-${CSS_PREFIX}-hovering`, "false");
                     if (li.getAttribute(`data-${CSS_PREFIX}-focusing`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                         li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
                     }
                 });
-                li.addEventListener("focus", function (e) {
+                li.addEventListener("focus", function(e) {
                     li.setAttribute(`data-${CSS_PREFIX}-focusing`, "true");
                     li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                     macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, Array.prototype.indexOf.call(li.parentNode.children, li));
                     focusMacroItem(macroContainer);
                 });
-                li.addEventListener("blur", function (e) {
+                li.addEventListener("blur", function(e) {
                     li.setAttribute(`data-${CSS_PREFIX}-focusing`, "false");
                     if (li.getAttribute(`data-${CSS_PREFIX}-hovering`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                         li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
@@ -2092,7 +2092,7 @@
             let prePostBtn = document.createElement("button");
             prePostBtn.classList.add(`${CSS_PREFIX}-prepost-btn`, "btn", "btn-default");
             prePostBtn.innerText = postBtn.innerText
-            prePostBtn.addEventListener("click", function (e) {
+            prePostBtn.addEventListener("click", function(e) {
                 e.preventDefault();
                 // Get the visible textareas.
                 let textareas = [
@@ -2114,7 +2114,7 @@
 
                 // Wait a little bit of time before clicking the post button to ensure the textarea
                 // has had enough time to update.
-                setTimeout(function () {
+                setTimeout(function() {
                     postBtn.click();
                     let previewBtn = section.querySelector(`.${CSS_PREFIX}-preview-btn[data-${CSS_PREFIX}-is-previewing="true"]`);
                     if (previewBtn) {
@@ -2128,7 +2128,7 @@
             previewBtn.classList.add(`${CSS_PREFIX}-preview-btn`, "btn", "btn-default");
             previewBtn.innerText = "Preview";
             previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, "false");
-            previewBtn.addEventListener("click", function (e) {
+            previewBtn.addEventListener("click", function(e) {
                 e.preventDefault();
                 let previewing = previewBtn.getAttribute(`data-${CSS_PREFIX}-is-previewing`) != "true";
                 previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, previewing);
