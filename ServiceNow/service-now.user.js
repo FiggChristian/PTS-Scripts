@@ -3,7 +3,8 @@
 // @namespace   https://github.com/FiggChristian/PTS-Scripts
 // @match       *://stanford.service-now.com/ticket.do*
 // @match       *://stanford.service-now.com/incident.do*
-// @version     1.1
+// @match       *://mydevices.stanford.edu/*
+// @version     1.1.2
 // @description Adds macros, replacements, and Markdown support to ServiceNow tickets.
 // @icon        https://stanford.service-now.com/stanford_favicon.png
 // @downloadURL https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/master/ServiceNow/service-now.user.js
@@ -14,10 +15,10 @@
 // @run-at      document-end
 // ==/UserScript==
 
-// To make your own macros, look at line 29.
-// To make your own {{text replacements}}, look at line 253.
+// To make your own macros, look at line 30.
+// To make your own {{text replacements}}, look at line 254.
 
-!function(PUBLIC, PRIVATE) {
+!function (PUBLIC, PRIVATE) {
     "use strict";
     const MAX_RECURSION_DEPTH = 10; // How many times we should expand a replacement inside a replacement inside a replacement...
     const START_DELIMITER = "{{"; // The text to delimit the start of a replacement. Zendesk's default is "{{"
@@ -65,7 +66,7 @@
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Ask user to provide the MAC address for the device in question.",
+            description: "Ask user to provide the MAC address for the device in question",
             type: PUBLIC
         },
         {
@@ -87,7 +88,7 @@
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Gives the user step-by-step instructions for upgrading to Windows 10 Education.",
+            description: "Gives the user step-by-step instructions for upgrading to Windows 10 Education",
             type: PUBLIC
         },
         {
@@ -113,7 +114,7 @@
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Gives the user step-by-step instructions for registering a device through IPRequest.",
+            description: "Gives the user step-by-step instructions for registering a device through IPRequest",
             type: PUBLIC
         },
         {
@@ -130,7 +131,7 @@
                 Thank you,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Asks the user for more information when their WiFi is bad.",
+            description: "Asks the user for more information when their WiFi is bad",
             type: PUBLIC
         },
         {
@@ -157,8 +158,41 @@
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Gives the user step-by-step instructions for setting up a router.",
+            description: "Gives the user step-by-step instructions for setting up a router",
             type: PUBLIC
+        },
+        {
+            name: "Stale Ticket Check-In",
+            value: `
+                Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
+                
+                Just wanted to check in and see if you were able to solve your issue or if you required further assistance? Please let us know so we can close this ticket or continue troubleshooting if necessary. 
+                
+                Best,
+                ${START_DELIMITER}current_user.name.first${END_DELIMITER}
+            `,
+            description: "Asks the user for an update on an old ticket",
+            type: PUBLIC
+        },
+        {
+            name: "2.4 GHz-Only Devices",
+            value: `
+                Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
+                
+                It looks like that the kind of device you want to use only works on a 2.4 GHz band, which Stanford's network is not currently set up to provide in the way at-home wifi routers do. You can read more about unsupported devices here: https://stanford.service-now.com/student_services?id=kb_article&sys_id=fb9174068746f850d9e07778cebb35d1.
+                
+                While your device won't be able to connect to Stanford's network, you have two options:
+                
+                1. Buy another device that does work with both 2.4 GHz and 5 GHz bands (which may or may not exist since many devices, especially "smart home" devices, are made for exactly that: homes with a private wifi network, not campuses with enterprise-grade wifi networks). If buying online such as from Amazon, make sure to look at comments and reviews to verify that the device does in fact work on both 2.4 GHz and 5 GHz bands.
+                2. Set up your own router. You can purchase your own router and get it connected to the Stanford network, and the router should be able to broadcast both 2.4 GHz and 5 GHz bands correctly for the device to connect to. We can guide you through the process of setting up your router if you choose to go this route.
+                
+                Please let us know if you have questions or issues.
+                
+                Best,
+                ${START_DELIMITER}current_user.name.first${END_DELIMITER}
+            `,
+            description: "Explains what to do for devices that only work on 2.4 a GHz band",
+            type: PUBLIC,
         },
         {
             name: "Manual MyDevices Enrollment",
@@ -174,7 +208,7 @@
                 Thanks!
                 [code]<!-- Delete this line: ${CURSOR("https://web.stanford.edu/dept/its/cgi-bin/services/endpoints/web/enter_enrollment_data.php")} -->[/code]
             `,
-            description: "Indicates that a device has been manually enrolled into MyDevices.",
+            description: "Indicates that a device has been manually enrolled into MyDevices",
             type: PUBLIC
         },
         {
@@ -189,7 +223,7 @@
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "To request timestamps from customer for Net Trouble ticket.",
+            description: "To request timestamps from customer for Net Trouble ticket",
             type: PUBLIC
         },
         {
@@ -208,7 +242,7 @@
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Asks the user for the MAC address, a picture of the ethernet port, and whether they've tried the other ports in the room.",
+            description: "Asks the user for the MAC address, a picture of the ethernet port, and whether they've tried the other ports in the room",
             type: PUBLIC
         },
         {
@@ -227,7 +261,7 @@
                 Thanks,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Lets the user know that the device has been blocked due to compliance and gives them instructions for how to resolve it.",
+            description: "Lets the user know that the device has been blocked due to compliance and gives them instructions for how to resolve it",
             type: PUBLIC
         },
         {
@@ -244,7 +278,7 @@
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Explains to the user how to reset a device's DNS record.",
+            description: "Explains to the user how to reset a device's DNS record",
             type: PUBLIC
         }
     ];
@@ -265,6 +299,21 @@
         //     `,
         //     description: "This is the description that will show up underneath your replacement's name in the replacement menu."
         // },
+        {
+            triggers: [
+                ""
+            ],
+            value: `
+                Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
+                
+                ${CURSOR()}
+                
+                Please let us know if you have questions or issues.
+                
+                Best,
+                ${START_DELIMITER}current_user.name.first${END_DELIMITER}
+            `
+        },
         {
             triggers: [
                 "ticket.requester.name.first",
@@ -567,7 +616,7 @@
                 "link.cardinal_key",
                 "link.cardinalkey"
             ],
-            value: `https://uit.stanford.edu/service/cardinalkey`,
+            value: `https://uit.stanford.edu/service/cardinalkey/installation`,
             description: "Link to download Cardinal Key for all devices"
         },
         {
@@ -581,7 +630,7 @@
                 "link.cardinalkey.macos",
                 "link.cardinalkey.osx"
             ],
-            value: `https://uit.stanford.edu/service/cardinalkey/install_mac`,
+            value: `https://uit.stanford.edu/service/cardinalkey/installation#macos`,
             description: "Link to download Cardinal Key for MacBooks"
         },
         {
@@ -591,7 +640,7 @@
                 "link.cardinalkey.windows",
                 "link.cardinalkey.pc"
             ],
-            value: `https://uit.stanford.edu/service/cardinalkey/install_windows`,
+            value: `https://uit.stanford.edu/service/cardinalkey/installation##windows`,
             description: "Link to download Cardinal Key for Windows PCs"
         },
         {
@@ -651,7 +700,7 @@
                 "link.enrollment.macos",
                 "link.enrollment.osx"
             ],
-            value: "https://uit.stanford.edu/service/enrollment/mac",
+            value: `https://uit.stanford.edu/service/enrollment/mac`,
             description: "Link to Enrollment Questionnaire for MacBooks"
         },
         {
@@ -663,7 +712,7 @@
                 "link.enrollment.windows",
                 "link.enrollment.pc",
             ],
-            value: "https://uit.stanford.edu/service/enrollment/windows",
+            value: `https://uit.stanford.edu/service/enrollment/windows`,
             description: "Link to Enrollment Questionnaire for Windows PCs"
         },
         {
@@ -681,13 +730,100 @@
                 "link.enrollment.iphone",
                 "link.enrollment.android"
             ],
-            value: "https://uit.stanford.edu/service/enrollment/mobiledevice",
+            value: `https://uit.stanford.edu/service/enrollment/mobiledevice`,
             description: "Link to Enrollment Questionnaire for Mobile Device"
+        },
+        {
+            triggers: [
+                "number.pts",
+                "number.us"
+            ],
+            value: `(650) 723-9204`,
+            description: "Phone number for PTS"
+        },
+        {
+            triggers: [
+                "icon.mydevices.compliant",
+                "icon.my_devices.compliant"
+            ],
+            value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-not_compliant.svg" alt=""/>[/code]`,
+            description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-not_compliant.svg" alt="green checkmark icon"/>"`
+        },
+        {
+            triggers: [
+                "icon.mydevices.n/a",
+                "icon.mydevices.na",
+                "icon.my_devices.n/a",
+                "icon.my_devices.na"
+            ],
+            value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-na.svg" alt=""/>[/code]`,
+            description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-na.svg" alt="gray dash icon"/>"`
+        },
+        {
+            triggers: [
+                "icon.mydevices.not_compliant",
+                "icon.mydevices.uncompliant",
+                "icon.mydevices.incompliant",
+                "icon.mydevices.noncompliant",
+                "icon.my_devices.not_compliant",
+                "icon.my_devices.uncompliant",
+                "icon.my_devices.incompliant",
+                "icon.my_devices.noncompliant"
+            ],
+            value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-compliant.svg" alt=""/>[/code]`,
+            description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-compliant.svg" alt="red X icon"/>"`
+        },
+        {
+            triggers: [
+                "icon.info",
+                "icon.information"
+            ],
+            value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/info.svg" alt="info icon"/>[/code]`,
+            description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/info.svg" alt="circled info icon"/>"`
         }
     ];
 
     // A prefix used by all classes and attributes to target in CSS stylesheets.
     const CSS_PREFIX = "pts-injected-script";
+    // The delay between when the user pushes the Post/Save button and when we push the actual but-
+    // ton ourself. There shjould be a delay to allow the textareas to update their values.
+    const SUBMIT_DELAY = 200;
+
+    // This snippet of code handles MyDevices. Whenever we navigate to a mydevices page with
+    // "?[CSS_PREFIX]-search-mac=[MAC Address]" in the URL, we make MyDevices search for that
+    // MAC Address. NetDB, IPRequest, and DHCP Log do not need to do this even though we are using
+    // them to perform searches because MyDevices forces you to be authenticated and includes an
+    // authentication token in each search. Without that token, we can't search, so we need to open
+    // MyDevices, fetch that authentication token ourselves, and then perform the search.
+    if (location.hostname == "mydevices.stanford.edu") {
+        const pairs = location.search.substring(1).split("&");
+        for (const pair of pairs) {
+            let key, val;
+            try {
+                [key, val] = pair.split("=");
+                // Only look for "[CSS_PREFIX]-search-mac=[MAC Address]"
+                if (decodeURIComponent(key) == `${CSS_PREFIX}-search-mac`) {
+                    val = decodeURIComponent(val);
+                } else continue;
+            } catch (e) {
+                continue;
+            }
+            // We found a MAC address to search for in the URL. Now we have to get the search form.
+            const searchForm = document.querySelector("form.mais-universal-search.search-form.navbar-search");
+            if (!searchForm) break;
+            // We can extract the authentication token from its action attribute.
+            const match = searchForm.action.match(/p_auth=([^&=]+)/);
+            if (!match) break;
+            const authToken = match[1];
+            // Now that we have the auth token, we can perform the search by navigating straight to
+            // the correct endpoint.
+            location.replace(`https://mydevices.stanford.edu/group/mydevices/m?p_p_id=mydevicesportlet_WAR_maismydevicesportlet&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&_mydevicesportlet_WAR_maismydevicesportlet_action=deviceSearch&p_auth=${authToken}&_mydevicesportlet_WAR_maismydevicesportlet_searchInput=${encodeURIComponent(val)}`);
+            break;
+        }
+        // The rest of the code in this script is only for ServiceNow, so we can return early to
+        // prevent running that too.
+        return;
+    }
 
     const _MACROS = {};
     for (const macro of MACROS) {
@@ -882,64 +1018,64 @@
     }
     marked.use({
         renderer: {
-            code: function(code, infostring, escaped) {
+            code: function (code, infostring, escaped) {
                 return `[code]<pre><code>[/code]${code.replace(/\n/g, "[code]<br>[/code]")}[code]</code></pre>[/code]`;
             },
-            blockquote: function(quote) {
+            blockquote: function (quote) {
                 return `[code]<blockquote>[/code]${quote}[code]</blockquote>[/code]`;
             },
             // HTML is treated as plain text instead of trying to render it, so we don't wrap it in
             // [code] ... [/code] blocks.
             // html: function(html) {},
-            heading: function(text, level, raw, slugger) {
+            heading: function (text, level, raw, slugger) {
                 return `[code]<h${level}>[/code]${text}[code]</h${level}>[/code]`;
             },
-            hr: function() {
+            hr: function () {
                 return `[code]<hr/>[/code]`;
             },
-            list: function(body, ordered, start) {
+            list: function (body, ordered, start) {
                 return `[code]<${ordered ? `ol${start == 1 ? "" : ` start="${start}"`}` : "ul"}>[/code]\n${body}[code]</${ordered ? "o" : "u"}l>[/code]`;
             },
-            listitem: function(text, task, checked) {
+            listitem: function (text, task, checked) {
                 return `[code]<li>[/code]${text}[code]</li>[/code]`;
             },
-            checkbox: function(checked) {
+            checkbox: function (checked) {
                 return `[code]<input type="checkbox"${checked ? " checked" : ""}>[/code] `;
             },
-            paragraph: function(text) {
+            paragraph: function (text) {
                 return `[code]<p>[/code]${text}[code]</p>[/code]`;
             },
-            table: function(header, body) {
+            table: function (header, body) {
                 return `[code]<table><thead>[/code]${header}[code]</thead><tbody>[/code]${body}[code]</tbody></table>[/code]`;
             },
-            tablerow: function(content) {
+            tablerow: function (content) {
                 return `[code]<tr>[/code]${content}[code]</tr>[/code]`;
             },
-            tablecell: function(content, flags) {
+            tablecell: function (content, flags) {
                 return `[code]<td${flags.align ? ` style="text-align:${flags.align}"` : ""}>[/code]${content}[code]</td>[/code]`
             },
-            strong: function(text) {
+            strong: function (text) {
                 return `[code]<strong>[/code]${text}[code]</strong>[/code]`;
             },
-            em: function(text) {
+            em: function (text) {
                 return `[code]<em>[/code]${text}[code]</em>[/code]`;
             },
-            codespan: function(code) {
+            codespan: function (code) {
                 return `[code]<code>[/code]${code}[code]</code>[/code]`
             },
-            br: function() {
+            br: function () {
                 return "[code]<br/>[/code]";
             },
-            del: function(text) {
+            del: function (text) {
                 return `[code]<span style="text-decoration:line-through"><del>[/code]${text}[code]</del></span>[/code]`
             },
-            link: function(href, title, text) {
+            link: function (href, title, text) {
                 return `[code]<a href="${href}"${title ? ` title="${title}"` : ""}>[/code]${text}[code]</a>[/code]`;
             },
-            image: function(src, title, text) {
+            image: function (src, title, text) {
                 return `[code]<img style="max-width:100%" src="${src}"${text ? ` alt="${text}"` : ""}${title ? ` title="${title}"` : ""}/>[/code]`
             },
-            text: function(text) {
+            text: function (text) {
                 return text.replace(/\n/g, "[code]<br/>[/code]");
             }
         },
@@ -951,11 +1087,11 @@
             {
                 name: "codeBlock",
                 level: "inline",
-                start: function(src) {
+                start: function (src) {
                     let index = src.indexOf("[code][/code]");
                     return ~index ? index : src.length;
                 },
-                tokenizer: function(src, tokens) {
+                tokenizer: function (src, tokens) {
                     if (src.startsWith("[code][/code]")) {
                         return {
                             type: "codeBlock",
@@ -964,7 +1100,7 @@
                         };
                     } else return false;
                 },
-                renderer: function(token) {
+                renderer: function (token) {
                     if (token.type == "codeBlock") {
                         return token.raw;
                     } else return false;
@@ -1418,11 +1554,11 @@
             li.addEventListener("click", e => selectAutoFillerItem(e, textareaData));
             // Also add a keydown listener for Enter and Spacebar to activate the click listener like
             // how a button would.
-            li.addEventListener("keydown", function(e) {
+            li.addEventListener("keydown", function (e) {
                 if (e.code == "Enter" || e.code == " ") selectAutoFillerItem(e, textareaData);
             });
             // Hover-in listener to left-align the tooltip, as well as make the item highlighted.
-            li.addEventListener("mouseenter", function(e) {
+            li.addEventListener("mouseenter", function (e) {
                 li.setAttribute(`data-${CSS_PREFIX}-hovering`, "true");
                 li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "true");
@@ -1433,7 +1569,7 @@
             });
             // Hover-out listener to make the tooltip return to normal, as well as un-highlight the
             // item.
-            li.addEventListener("mouseleave", function(e) {
+            li.addEventListener("mouseleave", function (e) {
                 li.setAttribute(`data-${CSS_PREFIX}-hovering`, "false");
                 if (li.getAttribute(`data-${CSS_PREFIX}-focusing`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                     li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
@@ -1443,7 +1579,7 @@
                     // to actually disappear before we can return the center alignment is normally has.
                     const tooltip = document.getElementsByClassName("tooltip")[0];
                     if (tooltip) {
-                        new MutationObserver(function(_, self) {
+                        new MutationObserver(function (_, self) {
                             self.disconnect();
                             if (document.documentElement.getAttribute(`data-${CSS_PREFIX}-hovering-auto-filler-option`) != "true") {
                                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "false");
@@ -1457,7 +1593,7 @@
                 }
             });
             // Focusing on the item is treated the same same as hovering in.
-            li.addEventListener("focus", function(e) {
+            li.addEventListener("focus", function (e) {
                 li.setAttribute(`data-${CSS_PREFIX}-focusing`, "true");
                 li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "true");
@@ -1470,14 +1606,14 @@
                 focusAutoFillItem(textareaData);
             });
             // Blurring the item is the same as hovering out.
-            li.addEventListener("blur", function(e) {
+            li.addEventListener("blur", function (e) {
                 li.setAttribute(`data-${CSS_PREFIX}-focusing`, "false");
                 if (li.getAttribute(`data-${CSS_PREFIX}-hovering`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                     li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
                     document.documentElement.setAttribute(`data-${CSS_PREFIX}-hovering-auto-filler-option`, "false");
                     const tooltip = document.getElementsByClassName("tooltip")[0];
                     if (tooltip) {
-                        new MutationObserver(function(_, self) {
+                        new MutationObserver(function (_, self) {
                             self.disconnect();
                             if (document.documentElement.getAttribute(`data-${CSS_PREFIX}-hovering-auto-filler-option`) != "true") {
                                 document.documentElement.setAttribute(`data-${CSS_PREFIX}-left-align-tooltip`, "false");
@@ -1577,7 +1713,7 @@
 
     window.addEventListener("resize", updateTextareas);
 
-    document.addEventListener("input", function(e) {
+    document.addEventListener("input", function (e) {
         updateTextareas();
         const textareaData = textareaDatas.get(e.target);
         if (textareaData) {
@@ -1591,19 +1727,19 @@
         }
     });
 
-    document.addEventListener("selectionchange", function(e) {
+    document.addEventListener("selectionchange", function (e) {
         const textareaData = textareaDatas.get(document.activeElement);
         if (textareaData) {
             updateTextareaSelection(textareaData);
         }
     });
 
-    const OUIsPopulated = new Promise(function(resolve, reject) {
+    const OUIsPopulated = new Promise(function (resolve, reject) {
         const url = "https://gitlab.com/wireshark/wireshark/-/raw/master/manuf";
         const xhr = new XMLHttpRequest();
         // Use allorigins.win to override the CORS policy
-        xhr.open("GET", `https://api.allorigins.win/get?url=${url}`);
-        xhr.addEventListener("readystatechange", function() {
+        xhr.open("GET", `https://api.allorigins.win/get?url=${encodeURIComponent(url)}&timestamp=${new Date().valueOf()}`);
+        xhr.addEventListener("readystatechange", function () {
             if (this.readyState == 4) {
                 if (this.status == 200) {
                     // The list of OUIs we will populate.
@@ -1654,31 +1790,32 @@
     });
 
     const MAC_ADDRESS_SPAN_STYLES = `
-        .${CSS_PREFIX}-mac-address-span,
-        .${CSS_PREFIX}-ip-address-span {
+        .${CSS_PREFIX}-smart-text-span {
             padding: .5rem;
             margin: -.5rem;
-            z-index: 2;
+            z-index: 1;
             position: relative;
         }
 
-        .${CSS_PREFIX}-mac-address-span:hover,
-        .${CSS_PREFIX}-ip-address-span:hover {
+        .${CSS_PREFIX}-smart-text-span:hover {
             padding: .75rem 1rem;
             margin: -.75rem -1rem;
-            z-index: 1;
+            z-index: 2;
         }
 
-        .${CSS_PREFIX}-mac-address-span > :first-child,
-        .${CSS_PREFIX}-ip-address-span > :first-child {
+        .${CSS_PREFIX}-smart-text-span > span:first-child {
             position: absolute;
             opacity: 0;
             pointer-events: none;
             white-space: nowrap;
         }
 
-        .${CSS_PREFIX}-mac-address-span > :last-child > :first-child,
-        .${CSS_PREFIX}-ip-address-span > :last-child > :first-child {
+        .${CSS_PREFIX}-smart-text-span > span:last-child {
+            position: relative;
+            display: inline-block;
+        }
+
+        .${CSS_PREFIX}-smart-text-span > span > input {
             text-decoration: underline;
             margin: 0;
             border: 0;
@@ -1691,15 +1828,54 @@
             background: transparent;
         }
 
-        .${CSS_PREFIX}-mac-address-span > :last-child > :last-child button,
-        .${CSS_PREFIX}-mac-address-span > :last-child > :last-child a,
-        .${CSS_PREFIX}-ip-address-span > :last-child > :last-child button,
-        .${CSS_PREFIX}-ip-address-span > :last-child > :last-child a {
+        .${CSS_PREFIX}-smart-text-span:hover .${CSS_PREFIX}-smart-text-popup,
+        .${CSS_PREFIX}-smart-text-span > span > input:focus ~ .${CSS_PREFIX}-smart-text-popup,
+        .${CSS_PREFIX}-smart-text-span > span:focus-within > .${CSS_PREFIX}-smart-text-popup {
+            display: block;
+        }
+
+        .${CSS_PREFIX}-smart-text-popup,
+        .${CSS_PREFIX}-smart-text-popup ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .${CSS_PREFIX}-smart-text-popup {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + .5rem);
+            left: 50%;
+            background-color: white;
+            border-radius: 3px;
+            border: 1px solid #cbcbcb;
+            font-size: 13px;
+            font-weight: initial;
+            font-style: initial;
+            text-decoration: initial;
+            color: initial;
+            width: 140px;
+            transform: translateX(-50%);
+            padding: .25em 0;
+            font-family: SourceSansPro, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            margin: 0 !important;
+        }
+
+        .${CSS_PREFIX}-smart-text-popup li {
+            list-style: none;
+            padding: .1em .25em !important;
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        .${CSS_PREFIX}-smart-text-popup button,
+        .${CSS_PREFIX}-smart-text-popup a {
             text-decoration: underline;
             color: inherit;
-            margin: 0;
+            margin: -.1em -.25em;
             border: 0;
-            padding: 0;
+            border-radius: 0;
+            padding: .1em .25em !important;
             background: transparent;
             min-height: initial;
             min-width: initial;
@@ -1708,68 +1884,93 @@
             font-family: inherit;
             vertical-align: baseline;
             cursor: pointer;
-        }
-
-        .${CSS_PREFIX}-mac-address-span > :last-child > :last-child,
-        .${CSS_PREFIX}-ip-address-span > :last-child > :last-child {
-            display: none
-        }
-
-        .${CSS_PREFIX}-mac-address-span:hover > :last-child > :last-child,
-        .${CSS_PREFIX}-mac-address-span > :last-child > :first-child:focus ~ :last-child,
-        .${CSS_PREFIX}-mac-address-span > :last-child > :last-child:focus-within,
-        .${CSS_PREFIX}-ip-address-span:hover > :last-child > :last-child,
-        .${CSS_PREFIX}-ip-address-span > :last-child > :first-child:focus ~ :last-child,
-        .${CSS_PREFIX}-ip-address-span > :last-child > :last-child:focus-within {
+            height: 100%;
+            width: calc(100% + .5em);
             display: inline-block;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        .${CSS_PREFIX}-smart-text-popup button:hover,
+        .${CSS_PREFIX}-smart-text-popup button:focus,
+        .${CSS_PREFIX}-smart-text-popup a:hover,
+        .${CSS_PREFIX}-smart-text-popup a:focus {
+            background-color: #e6e9eb;
+            text-decoration: underline;
+        }
+
+        .${CSS_PREFIX}-smart-text-popup li ul {
+            margin: -.25em;
+        }
+
+        .${CSS_PREFIX}-smart-text-popup li ul li {
+            padding: .1em .25em 0 1.25em !important;
+        }
+
+        .${CSS_PREFIX}-smart-text-popup li ul li button,
+        .${CSS_PREFIX}-smart-text-popup li ul li a {
+            margin: -.1em -.25em 0 -1.25em;
+            padding: .1em .25em 0 1.25em !important;
+            width: calc(100% + 1.5em);
+        }
+
+        .${CSS_PREFIX}-smart-text-popup > li:first-child {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: .8em;
+            letter-spacing: .25px;
+            text-align: center;
         }
     `;
-    const MAC_ADDRESS_REGEX = new RegExp(
-        String.raw`\b(?:` +
-        String.raw`[a-f\d]{12}(?![a-f\d])` + "|" + // A1B2C3D4E5F6
-        String.raw`[a-f\d]{4}(?:[-–][a-f\d]{4}){2}` + "|" + // A1B2-C3D4-E5F6 or A1B2–C3D4–E5F6 (hyphen vs. en dash)
-        String.raw`[a-f\d]{4}([^a-z\d\s])[a-f\d]{4}\1[a-f\d]{4}(?!\1?[a-f\d])` + "|" + // A1B2.C3D4.E5F6 (or any other separator)
-        String.raw`[a-f\d]{2}(?:[-–][a-f\d]{2}){5}` + "|" + // A1-B2-C3-D4-E5-F6 or A1–B2–C3–D4–E5–F6
-        String.raw`[a-f\d]{2}([^a-z\d])[a-f\d]{2}(?:\2[a-f\d]{2}){4}` + // A1:B2:C3:D4:E5:F6 (or any other separator)
-        String.raw`)(?!\2?[a-f\d])`, // Can't be followed by more MAC address characters
-        "i"
-    );
+
+    const MAC_ADDRESS_REGEX = /\b(?:[a-f\d]{12}(?![a-f\d])|[a-f\d]{4}(?:[-–][a-f\d]{4}){2}|[a-f\d]{4}([^a-z\d\s])[a-f\d]{4}\1[a-f\d]{4}(?!\1?[a-f\d])|[a-f\d]{2}(?:[-–][a-f\d]{2}){5}|[a-f\d]{2}([^a-z\d])[a-f\d]{2}(?:\2[a-f\d]{2}){4})(?!\2?[a-f\d])/i;
     const IP_ADDRESS_REGEX = /(^|[^.])\b((?:[1-9]?\d|1\d\d|2[0-4]\d|2[0-5][0-5])(?:\.(?:[1-9]?\d|1\d\d|2[0-4]\d|2[0-5][0-5])){3})\b(?!\.\d)/;
-    function replaceMACsAndIPs(node) {
+    const NODE_NAME_REGEX = /\b(rescomp-\d+-\d+|sr\d+-[\da-f]+)(?:\.stanford.edu)?\b/;
+    function replaceSmartText(node) {
         if (node.nodeType == Node.TEXT_NODE) {
             let macAddressMatch;
             let ipAddressMatch;
+            let nodeNameMatch;
 
             while (true) {
                 macAddressMatch = MAC_ADDRESS_REGEX.exec(node.textContent);
                 ipAddressMatch = IP_ADDRESS_REGEX.exec(node.textContent);
+                nodeNameMatch = NODE_NAME_REGEX.exec(node.textContent);
 
-                // Only do the first one.
-                if (macAddressMatch && ipAddressMatch) {
-                    if (macAddressMatch.index < ipAddressMatch) {
-                        ipAddressMatch = null;
-                    } else {
-                        macAddressMatch = null;
-                    }
-                } else if (!macAddressMatch && !ipAddressMatch) {
+                // Only look at the first match.
+                let firstMatch = null;
+                if (macAddressMatch && (firstMatch == null || firstMatch.index > macAddressMatch.index)) {
+                    firstMatch = macAddressMatch;
+                }
+                if (ipAddressMatch && (firstMatch == null || firstMatch.index > ipAddressMatch.index)) {
+                    firstMatch = ipAddressMatch;
+                }
+                if (nodeNameMatch && (firstMatch == null || firstMatch.index > nodeNameMatch.index)) {
+                    firstMatch = nodeNameMatch;
+                }
+
+                // Break if htere are no matches.
+                if (firstMatch === null) {
                     break;
                 }
 
-                if (macAddressMatch) {
-                    const formatted = macAddressMatch[0].toUpperCase().replace(/[^A-F\d]/g, "").replace(/(.{2})/g, ":$1").substring(1);;
+                if (firstMatch == macAddressMatch) {
+                    const formatted = macAddressMatch[0].toUpperCase().replace(/[^A-F\d]/g, "").replace(/(.{2})/g, ":$1").substring(1);
                     const macSpan = document.createElement("span");
-                    macSpan.classList.add(`${CSS_PREFIX}-mac-address-span`);
-                    macSpan.innerHTML = `<span>${macAddressMatch[0]}</span><span><input value="${macAddressMatch[0]}" readonly/><span>&nbsp;(<button class="btn">Copy</button> | <a target="netdb_search" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Nodes&purge=">Search NetDB</a> | <span style="font-style:italic">Loading OUIs...</span>)</span></span>`;
+                    macSpan.classList.add(`${CSS_PREFIX}-smart-text-span`);
+                    macSpan.innerHTML = `<span>${macAddressMatch[0]}</span><span><input value="${macAddressMatch[0]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>MAC Address</li><li class="${CSS_PREFIX}-mac-address-oui" style="font-style:italic">Loading OUIs...</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Nodes&purge=">NetDB</a></li><li><a target="dhcp_log" href="http://day.stanford.edu:9696/manage/dhcplog/check_db?input=${formatted}">DHCP Log</a></li><li><a target="mydevices" href="https://mydevices.stanford.edu/group/mydevices?${encodeURIComponent(`${CSS_PREFIX}-search-mac`)}=${encodeURIComponent(formatted)}">MyDevices</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
+
+                    macSpan.addEventListener("click", e => e.stopPropagation());
 
                     let input = macSpan.lastElementChild.firstElementChild;
-                    input.addEventListener("click", function(e) {
+                    input.addEventListener("click", function (e) {
                         e.preventDefault();
                         input.focus();
                         input.select();
                     });
 
-                    let OUISpan = macSpan.lastElementChild.lastElementChild.lastElementChild;
-                    OUIsPopulated.then(function(OUIs) {
+                    const OUISpan = macSpan.querySelector(`.${CSS_PREFIX}-mac-address-oui`);
+                    OUIsPopulated.then(function (OUIs) {
                         let prefix = formatted.substring(0, 8);
                         if (!(prefix in OUIs)) {
                             OUISpan.textContent = "Unregistered OUI";
@@ -1785,12 +1986,12 @@
                             OUISpan.textContent = `OUI: ${OUIs[prefix]}`;
                             OUISpan.style.fontStyle = "initial";
                         }
-                    }, function() {
+                    }, function () {
                         OUISpan.textContent = "Couldn't Load OUIs";
                     });
 
-                    const copySpan = macSpan.lastElementChild.lastElementChild.firstElementChild;
-                    copySpan.addEventListener("click", function(e) {
+                    const copySpan = macSpan.querySelector(`.${CSS_PREFIX}-smart-text-copy`);
+                    copySpan.addEventListener("click", function (e) {
                         e.preventDefault();
                         e.stopPropagation();
                         try {
@@ -1806,25 +2007,27 @@
 
                     node.parentNode.insertBefore(document.createTextNode(node.textContent.substring(0, macAddressMatch.index)), node);
                     node.parentNode.insertBefore(macSpan, node);
-                    macSpan.firstElementChild.nextElementSibling.firstElementChild.style.width = macSpan.firstElementChild.getBoundingClientRect().width + "px";
+                    macSpan.lastElementChild.firstElementChild.style.width = macSpan.firstElementChild.getBoundingClientRect().width + "px";
                     node.textContent = node.textContent.substring(macAddressMatch.index + macAddressMatch[0].length);
                 }
 
-                if (ipAddressMatch) {
+                if (firstMatch == ipAddressMatch) {
                     let formatted = ipAddressMatch[2];
                     const ipSpan = document.createElement("span");
-                    ipSpan.classList.add(`${CSS_PREFIX}-ip-address-span`);
-                    ipSpan.innerHTML = `<span>${ipAddressMatch[2]}</span><span><input value="${ipAddressMatch[2]}" readonly/><span>&nbsp;(<button class="btn">Copy</button> | <a target="netdb_search" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Networks&purge=">Search NetDB</a>)</span></span>`;
+                    ipSpan.classList.add(`${CSS_PREFIX}-smart-text-span`);
+                    ipSpan.innerHTML = `${ipAddressMatch[1]}<span>${ipAddressMatch[2]}</span><span><input value="${ipAddressMatch[2]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>IP Address</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Networks&purge=">NetDB</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=${encodeURIComponent(formatted)}&macaddress=&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
+
+                    ipSpan.addEventListener("click", e => e.stopPropagation());
 
                     let input = ipSpan.lastElementChild.firstElementChild;
-                    input.addEventListener("click", function(e) {
+                    input.addEventListener("click", function (e) {
                         e.preventDefault();
                         input.focus();
                         input.select();
                     });
 
-                    const copySpan = ipSpan.lastElementChild.lastElementChild.firstElementChild;
-                    copySpan.addEventListener("click", function(e) {
+                    const copySpan = ipSpan.querySelector(`.${CSS_PREFIX}-smart-text-copy`);
+                    copySpan.addEventListener("click", function (e) {
                         e.preventDefault();
                         e.stopPropagation();
                         try {
@@ -1840,13 +2043,49 @@
 
                     node.parentNode.insertBefore(document.createTextNode(node.textContent.substring(0, ipAddressMatch.index + ipAddressMatch[1].length)), node);
                     node.parentNode.insertBefore(ipSpan, node);
-                    ipSpan.firstElementChild.nextElementSibling.firstElementChild.style.width = ipSpan.firstElementChild.getBoundingClientRect().width + "px";
+                    ipSpan.lastElementChild.firstElementChild.style.width = ipSpan.firstElementChild.getBoundingClientRect().width + "px";
                     node.textContent = node.textContent.substring(ipAddressMatch.index + ipAddressMatch[0].length);
+                }
+
+                if (firstMatch == nodeNameMatch) {
+                    const formatted = nodeNameMatch[1];
+                    const nodeSpan = document.createElement("span");
+                    nodeSpan.classList.add(`${CSS_PREFIX}-smart-text-span`);
+                    nodeSpan.innerHTML = `<span>${nodeNameMatch[0]}</span><span><input value="${nodeNameMatch[0]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>Node Name</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/node_info?name=${formatted}.stanford.edu">NetDB</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=&hostname=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
+                    
+                    nodeSpan.addEventListener("click", e => e.stopPropagation());
+
+                    let input = nodeSpan.lastElementChild.firstElementChild;
+                    input.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        input.focus();
+                        input.select();
+                    });
+
+                    const copySpan = nodeSpan.querySelector(`.${CSS_PREFIX}-smart-text-copy`);
+                    copySpan.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        try {
+                            navigator.clipboard.writeText(formatted);
+                        } catch (e) {
+                            input.focus();
+                            if (!document.execCommand("selectAll", false)) {
+                                input.setSelectionRange(0, input.value.length);
+                            }
+                            document.execCommand("copy", false);
+                        }
+                    });
+
+                    node.parentNode.insertBefore(document.createTextNode(node.textContent.substring(0, nodeNameMatch.index)), node);
+                    node.parentNode.insertBefore(nodeSpan, node);
+                    nodeSpan.lastElementChild.firstElementChild.style.width = nodeSpan.firstElementChild.getBoundingClientRect().width + "px";
+                    node.textContent = node.textContent.substring(nodeNameMatch.index + nodeNameMatch[0].length);
                 }
             }
         } else if (node.nodeType == Node.ELEMENT_NODE || node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
             for (let i = node.childNodes.length - 1; i >= 0; i--) {
-                replaceMACsAndIPs(node.childNodes[i]);
+                replaceSmartText(node.childNodes[i]);
             }
         }
     }
@@ -1882,7 +2121,7 @@
             markdownPreviewer.setAttribute(`data-${CSS_PREFIX}-is-previewing`, "false");
             markdownPreviewer.style.display = "none";
             let markdownPreviewerRoot = markdownPreviewer.attachShadow({ mode: "open" });
-            markdownPreviewerRoot.innerHTML = `<style>${MAC_ADDRESS_SPAN_STYLES}</style><link href="styles/activity_encapsulated.css" rel="stylesheet" type="text/css"><style>:host img{max-width:100%;height:auto;overflow:hidden}</style><div style="max-height:100%;overflow:auto;padding:0 18px"></div>`;
+            markdownPreviewerRoot.innerHTML = `<style>${MAC_ADDRESS_SPAN_STYLES}</style><link href="styles/activity_encapsulated.css" rel="stylesheet" type="text/css"><style>:host img{max-width:100%;height:auto;overflow-y:visible}</style><div style="overflow-y:visible;padding:0 18px;border-top:1px solid transparent;border-bottom:1px solid transparent;margin:-1px 0"></div>`;
             textarea.parentNode.insertBefore(markdownPreviewer, textarea.nextElementSibling);
 
             function parentFocusOut(e) {
@@ -1896,6 +2135,7 @@
                 element: textarea,
                 mirror: mirror,
                 autoFiller: autoFiller,
+                oldHeight: null,
                 autoFilling: false,
                 autoFillerVisibleIndices: [],
                 markdownPreviewer: markdownPreviewer,
@@ -1908,7 +2148,7 @@
             };
             textareaDatas.set(textarea, textareaData);
 
-            textarea.addEventListener("keydown", function(e) {
+            textarea.addEventListener("keydown", function (e) {
                 // Only intercept keypresses when the autFiller is open.
                 if (textareaData.autoFilling) {
                     if (e.code == "ArrowDown") {
@@ -1936,11 +2176,11 @@
                 }
             });
 
-            textarea.addEventListener("mousedown", function(e) {
+            textarea.addEventListener("mousedown", function (e) {
                 updateTextareaSelection(textareaData);
             });
 
-            textarea.addEventListener("mouseup", function(e) {
+            textarea.addEventListener("mouseup", function (e) {
                 updateTextareaSelection(textareaData);
             });
         }
@@ -1950,7 +2190,7 @@
             section.setAttribute(`data-${CSS_PREFIX}-macro-btn-inserted`, "true");
             let macroContainer = document.createElement("span");
             macroContainer.classList.add(`${CSS_PREFIX}-macro-list-container`);
-            macroContainer.addEventListener("keydown", function(e) {
+            macroContainer.addEventListener("keydown", function (e) {
                 if (macroContainer.firstElementChild.getAttribute(`data-${CSS_PREFIX}-list-expanded`) == "true") {
                     let index = +macroContainer.getAttribute(`data-${CSS_PREFIX}-focused-index`);
                     if (e.code == "ArrowDown") {
@@ -1987,7 +2227,7 @@
                     macroContainer.firstElementChild.click();
                 }
             });
-            macroContainer.addEventListener("focusout", function(e) {
+            macroContainer.addEventListener("focusout", function (e) {
                 if (e.relatedTarget === null || (e.relatedTarget instanceof HTMLElement && !macroContainer.contains(e.relatedTarget))) {
                     // Set to true so we can toggle it to false.
                     macroContainer.firstElementChild.setAttribute(`data-${CSS_PREFIX}-list-expanded`, "true");
@@ -2001,7 +2241,7 @@
             btn.setAttribute("type", "button");
             btn.tabIndex = 0;
             btn.innerText = "Apply Macro";
-            btn.addEventListener("mousedown", function(e) {
+            btn.addEventListener("mousedown", function (e) {
                 // The <button> is receiving focus. Safari and Firefox have a bug where a <button> won't
                 // be focused when you click on it
                 // (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#clicking_and_focus)
@@ -2011,7 +2251,7 @@
                     e.preventDefault();
                 }
             });
-            btn.addEventListener("click", function(e) {
+            btn.addEventListener("click", function (e) {
                 let expanded = btn.getAttribute(`data-${CSS_PREFIX}-list-expanded`) != "true";
                 btn.setAttribute(`data-${CSS_PREFIX}-list-expanded`, expanded);
                 if (expanded) {
@@ -2046,26 +2286,26 @@
                 li.role = "button";
 
                 li.addEventListener("click", selectMacroItem);
-                li.addEventListener("keydown", function(e) {
+                li.addEventListener("keydown", function (e) {
                     if (e.code == "Enter" || e.code == " ") selectMacroItem(e);
                 });
-                li.addEventListener("mouseenter", function(e) {
+                li.addEventListener("mouseenter", function (e) {
                     li.setAttribute(`data-${CSS_PREFIX}-hovering`, "true");
                     li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                 });
-                li.addEventListener("mouseleave", function(e) {
+                li.addEventListener("mouseleave", function (e) {
                     li.setAttribute(`data-${CSS_PREFIX}-hovering`, "false");
                     if (li.getAttribute(`data-${CSS_PREFIX}-focusing`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                         li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
                     }
                 });
-                li.addEventListener("focus", function(e) {
+                li.addEventListener("focus", function (e) {
                     li.setAttribute(`data-${CSS_PREFIX}-focusing`, "true");
                     li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
                     macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, Array.prototype.indexOf.call(li.parentNode.children, li));
                     focusMacroItem(macroContainer);
                 });
-                li.addEventListener("blur", function(e) {
+                li.addEventListener("blur", function (e) {
                     li.setAttribute(`data-${CSS_PREFIX}-focusing`, "false");
                     if (li.getAttribute(`data-${CSS_PREFIX}-hovering`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
                         li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
@@ -2092,7 +2332,7 @@
             let prePostBtn = document.createElement("button");
             prePostBtn.classList.add(`${CSS_PREFIX}-prepost-btn`, "btn", "btn-default");
             prePostBtn.innerText = postBtn.innerText
-            prePostBtn.addEventListener("click", function(e) {
+            prePostBtn.addEventListener("click", function (e) {
                 e.preventDefault();
                 // Get the visible textareas.
                 let textareas = [
@@ -2104,23 +2344,25 @@
                 // Go through each textarea and replace its contents with the markdown-parsed
                 // version, but only if the textarea is visible (by checking. offsetParent), and if
                 // the markdown-parsed text is any different from the textarea's actual text.
+                let hasChangedValue = false;
                 for (const textarea of textareas) {
                     if (!textarea || !textarea.offsetParent) continue;
                     let parsedText = parseMarkdownText(textarea.value);
                     if (textarea.value != parsedText) {
                         setTextareaValue(textareaDatas.get(textarea), parsedText, false);
+                        hasChangedValue = true;
                     }
                 }
 
                 // Wait a little bit of time before clicking the post button to ensure the textarea
                 // has had enough time to update.
-                setTimeout(function() {
+                setTimeout(function () {
                     postBtn.click();
                     let previewBtn = section.querySelector(`.${CSS_PREFIX}-preview-btn[data-${CSS_PREFIX}-is-previewing="true"]`);
                     if (previewBtn) {
                         previewBtn.click();
                     }
-                }, 250);
+                }, hasChangedValue ? SUBMIT_DELAY : 0);
             });
 
             // Make a Preview button to toggle previewing a textarea's markdown.
@@ -2128,7 +2370,7 @@
             previewBtn.classList.add(`${CSS_PREFIX}-preview-btn`, "btn", "btn-default");
             previewBtn.innerText = "Preview";
             previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, "false");
-            previewBtn.addEventListener("click", function(e) {
+            previewBtn.addEventListener("click", function (e) {
                 e.preventDefault();
                 let previewing = previewBtn.getAttribute(`data-${CSS_PREFIX}-is-previewing`) != "true";
                 previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, previewing);
@@ -2183,7 +2425,11 @@
                         textareaData.markdownPreviewerRoot.innerHTML = escaped;
                         textareaData.markdownPreviewer.style.display = "block";
                         textarea.tabIndex = -1;
-                        replaceMACsAndIPs(textareaData.markdownPreviewerRoot);
+                        replaceSmartText(textareaData.markdownPreviewerRoot);
+
+                        textareaData.oldHeight = textareaData.element.style.height;
+                        textareaData.element.style.height = textareaData.markdownPreviewerRoot.scrollHeight + "px";
+                        textareaData.element.style.maxHeight = "initial";
                     } else {
                         textareaData.markdownPreviewer.style.display = "none";
                         // For whatever reason, ServiceNow seems to have a bug where a textarea with
@@ -2193,6 +2439,10 @@
                         // attribute off the element altogether so that it implicitly goes back to
                         // 0.
                         textarea.removeAttribute("tabindex");
+                        
+                        textareaData.element.style.height = textareaData.oldHeight;
+                        textareaData.element.style.maxHeight = "initial";
+                        textareaData.oldHeight = null;
                     }
 
                     textarea.blur();
@@ -2211,17 +2461,97 @@
             section.insertBefore(previewBtn, prePostBtn);
         }
 
-        let comments = document.querySelectorAll(`.sn-widget-textblock-body:not([data-${CSS_PREFIX}-mac-searched])`);
+        let comments = document.querySelectorAll(`.sn-widget-textblock-body:not([data-${CSS_PREFIX}-smart-text-searched]),.sn-widget-list-table-cell:not([data-${CSS_PREFIX}-smart-text-searched]),sn-html-content-wrapper:not([data-${CSS_PREFIX}-smart-text-searched])`);
         for (const comment of comments) {
-            comment.setAttribute(`data-${CSS_PREFIX}-mac-searched`, "true");
+            comment.setAttribute(`data-${CSS_PREFIX}-smart-text-searched`, "true");
+
+            for (let node = comment; node; node = node.parentElement) {
+                node.style.overflow = "visible";
+                if (node.nodeName == "LI") {
+                    node.style.display = "inline-block";
+                    node.style.width = "100%";
+                } else if (node.classList.contains("h-card-wrapper") && node.classList.contains("activities-form")) {
+                    break;
+                }
+            }
+
             if (comment.shadowRoot) {
                 const stylesheet = document.createElement("style");
                 stylesheet.innerHTML = MAC_ADDRESS_SPAN_STYLES;
                 comment.shadowRoot.insertBefore(stylesheet, comment.shadowRoot.firstChild);
-                replaceMACsAndIPs(comment.shadowRoot);
+                replaceSmartText(comment.shadowRoot);
             } else {
-                replaceMACsAndIPs(comment);
+                replaceSmartText(comment);
             }
+        }
+        
+        let saveBtn = document.querySelector(`#sysverb_update_and_stay:not([data-${CSS_PREFIX}-save-btn-inserted])`);
+        if (saveBtn) {
+            saveBtn.setAttribute(`data-${CSS_PREFIX}-save-btn-inserted`, "true");
+            let preSaveBtn = document.createElement("button");
+            preSaveBtn.classList.add(`${CSS_PREFIX}-presave-btn`, "btn", "btn-default", "action_context");
+            preSaveBtn.innerText = saveBtn.innerText;
+            preSaveBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                let textareas = [
+                    document.getElementById("activity-stream-textarea"),
+                    document.getElementById("activity-stream-comments-textarea"),
+                    document.getElementById("activity-stream-work_notes-textarea")
+                ];
+
+                let hasChangedValue = false;
+                for (const textarea of textareas) {
+                    if (!textarea || !textarea.offsetParent) continue;
+                    let parsedText = parseMarkdownText(textarea.value);
+                    if (textarea.value != parsedText) {
+                        setTextareaValue(textareaDatas.get(textarea), parsedText, false);
+                        hasChangedValue = true;
+                    }
+                }
+
+                setTimeout(function () {
+                    saveBtn.click();
+                }, hasChangedValue ? SUBMIT_DELAY : 0);
+            });
+            
+            saveBtn.style.position = "absolute";
+            saveBtn.style.opacity = 0;
+            saveBtn.style.pointerEvents = "none";
+            saveBtn.parentNode.insertBefore(preSaveBtn, saveBtn);
+        }
+        let saveExitBtn = document.querySelector(`#sysverb_update:not([data-${CSS_PREFIX}-save-exit-btn-inserted])`);
+        if (saveExitBtn) {
+            saveExitBtn.setAttribute(`data-${CSS_PREFIX}-save-exit-btn-inserted`, "true");
+            let preSaveExitBtn = document.createElement("button");
+            preSaveExitBtn.classList.add(`${CSS_PREFIX}-presave-exit-btn`, "btn", "btn-default", "action_context");
+            preSaveExitBtn.innerText = saveExitBtn.innerText;
+            preSaveExitBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                let textareas = [
+                    document.getElementById("activity-stream-textarea"),
+                    document.getElementById("activity-stream-comments-textarea"),
+                    document.getElementById("activity-stream-work_notes-textarea")
+                ];
+
+                let hasChangedValue = false;
+                for (const textarea of textareas) {
+                    if (!textarea || !textarea.offsetParent) continue;
+                    let parsedText = parseMarkdownText(textarea.value);
+                    if (textarea.value != parsedText) {
+                        setTextareaValue(textareaDatas.get(textarea), parsedText, false);
+                        hasChangedValue = true;
+                    }
+                }
+
+                setTimeout(function () {
+                    saveExitBtn.click();
+                }, hasChangedValue ? SUBMIT_DELAY : 0);
+            });
+
+            saveExitBtn.style.position = "absolute";
+            saveExitBtn.style.opacity = 0;
+            saveExitBtn.style.pointerEvents = "none";
+            saveExitBtn.parentNode.insertBefore(preSaveExitBtn, saveExitBtn);
         }
     }
     f();
@@ -2242,7 +2572,7 @@
             max-height: 120px;
             width: 200px;
             box-sizing: border-box;
-            z-index: 1;
+            z-index: 3;
         }
 
         .${CSS_PREFIX}-auto-filler li,
