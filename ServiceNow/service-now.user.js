@@ -175,6 +175,20 @@
             type: PUBLIC
         },
         {
+            name: "Unregistered MAC Address",
+            value: `
+                Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
+                
+                Looking on our end for the device with the MAC address you provided, it looks like it's not showing up in out system, indicating that your device is not yet registered. To register it, please go to your device's network settings, connect to the "Stanford" network, then navigate to [snsr.stanford.edu](https://snsr.stanford.edu) in a web browser. Please follow the prompts through there until your device is registered. If you are still having problems connecting after registering (it can take about 20 minutes to update, so it may not work immediately), please let us know and we can continue troubleshooting.
+                
+                Please let us know if you have questions or issues.
+                
+                Best,
+                ${START_DELIMITER}current_user.name.first${END_DELIMITER}
+            `,
+            description: "Gives the user instructions for registering their device once they've provided an unregistered MAC address"
+        },
+        {
             name: "2.4 GHz-Only Devices",
             value: `
                 Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
@@ -2052,7 +2066,7 @@
                     const nodeSpan = document.createElement("span");
                     nodeSpan.classList.add(`${CSS_PREFIX}-smart-text-span`);
                     nodeSpan.innerHTML = `<span>${nodeNameMatch[0]}</span><span><input value="${nodeNameMatch[0]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>Node Name</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/node_info?name=${formatted}.stanford.edu">NetDB</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=&hostname=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
-                    
+
                     nodeSpan.addEventListener("click", e => e.stopPropagation());
 
                     let input = nodeSpan.lastElementChild.firstElementChild;
@@ -2439,7 +2453,7 @@
                         // attribute off the element altogether so that it implicitly goes back to
                         // 0.
                         textarea.removeAttribute("tabindex");
-                        
+
                         textareaData.element.style.height = textareaData.oldHeight;
                         textareaData.element.style.maxHeight = "initial";
                         textareaData.oldHeight = null;
@@ -2484,7 +2498,7 @@
                 replaceSmartText(comment);
             }
         }
-        
+
         let saveBtn = document.querySelector(`#sysverb_update_and_stay:not([data-${CSS_PREFIX}-save-btn-inserted])`);
         if (saveBtn) {
             saveBtn.setAttribute(`data-${CSS_PREFIX}-save-btn-inserted`, "true");
@@ -2513,7 +2527,7 @@
                     saveBtn.click();
                 }, hasChangedValue ? SUBMIT_DELAY : 0);
             });
-            
+
             saveBtn.style.position = "absolute";
             saveBtn.style.opacity = 0;
             saveBtn.style.pointerEvents = "none";
