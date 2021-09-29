@@ -4,7 +4,7 @@
 // @match       *://stanford.service-now.com/ticket.do*
 // @match       *://stanford.service-now.com/incident.do*
 // @match       *://mydevices.stanford.edu/*
-// @version     1.1.2
+// @version     1.1.3
 // @description Adds macros, replacements, and Markdown support to ServiceNow tickets.
 // @icon        https://stanford.service-now.com/stanford_favicon.png
 // @downloadURL https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/master/ServiceNow/service-now.user.js
@@ -104,7 +104,7 @@
                 4. Click the **New Registration** button at the bottom.
                 5. Continue through the terms and conditions until it asks whether the computer you are currently staring at is the one you want to register. Select **No**.
                 6. From the Device Type list, choose your device, or **Other** if it is not listed.
-                7. For the Operating System, choose **Other (Wired)** if you plan on connecting your device via an ethernet cable, or **Other (Gaming)** if you plan on connecting it via WiFi (even if your device is not going to be used for gaming).
+                7. For the Operating System, choose **Other (Wired)** if you plan on connecting your device via an ethernet cable, or **Other (Gaming)** if you plan on connecting it via Wi-Fi (even if your device is not going to be used for gaming).
                 8. Under Hardware Address, copy and paste the MAC address you found in Step 1.
                 9. Continue through the registration, filling out any details it asks for.
                 10. Once registered, your device should be able to connect to the internet within about 20 minutes. It's best to unplug it for about two minutes and plug it back in to give it the best chance of seeing the new changes on the system.
@@ -118,20 +118,20 @@
             type: PUBLIC
         },
         {
-            name: "Bad WiFi Connection",
+            name: "Bad Wi-Fi Connection",
             value: `
                 Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
-
-                Our first recommendation is that you "forget" all of the Stanford wireless networks (Stanford Visitor, Stanford, eduroam, Stanford Secure) from any affected device's remembered networks, and then "Rejoin" only the Stanford network.  Please do not connect to other networks until we complete our troubleshooting process with you.
+                
+                Our first recommendation is that you "forget" all of the Stanford wireless networks (Stanford Visitor, Stanford, eduroam, Stanford Secure) from any affected device's remembered networks, and then "Rejoin" only the Stanford network. You can find instructions for doing this here: [Mac](${START_DELIMITER}link.forget_wifi.mac${END_DELIMITER}) | [Windows](${START_DELIMITER}link.forget_wifi.windows${END_DELIMITER}) | [iOS](${START_DELIMITER}link.forget_wifi.ios${END_DELIMITER}) | [Android](${START_DELIMITER}link.forget_wifi.android${END_DELIMITER}). Please do not connect to other networks until we complete our troubleshooting process with you.
                 
                 If you continue to experience trouble, please glance at the clock and note the time, what program you were using, and where you were sitting in your apartment.  We can use this information to open a report with networking to investigate the performance of the wireless system in your apartment.  Three of these notes will be enough information for networking to create a very comprehensive picture of what the trouble might be and get a faster resolution.
                 
                 It is best to troubleshoot one wireless device at a time, as any adjustments made to the wireless system may improve the connections for other devices nearby.
                 
-                Thank you,
+                Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Asks the user for more information when their WiFi is bad",
+            description: "Asks the user for more information when their Wi-Fi is bad",
             type: PUBLIC
         },
         {
@@ -186,18 +186,19 @@
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Gives the user instructions for registering their device once they've provided an unregistered MAC address"
+            description: "Gives the user instructions for registering their device once they've provided an unregistered MAC address",
+            type: PUBLIC
         },
         {
             name: "2.4 GHz-Only Devices",
             value: `
                 Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
                 
-                It looks like that the kind of device you want to use only works on a 2.4 GHz band, which Stanford's network is not currently set up to provide in the way at-home wifi routers do. You can read more about unsupported devices here: https://stanford.service-now.com/student_services?id=kb_article&sys_id=fb9174068746f850d9e07778cebb35d1.
+                It looks like that the kind of device you want to use only works on a 2.4 GHz band, which Stanford's network is not currently set up to provide in the way at-home Wi-Fi routers do. You can read more about unsupported devices here: https://stanford.service-now.com/student_services?id=kb_article&sys_id=fb9174068746f850d9e07778cebb35d1.
                 
                 While your device won't be able to connect to Stanford's network, you have two options:
                 
-                1. Buy another device that does work with both 2.4 GHz and 5 GHz bands (which may or may not exist since many devices, especially "smart home" devices, are made for exactly that: homes with a private wifi network, not campuses with enterprise-grade wifi networks). If buying online such as from Amazon, make sure to look at comments and reviews to verify that the device does in fact work on both 2.4 GHz and 5 GHz bands.
+                1. Buy another device that does work with both 2.4 GHz and 5 GHz bands (which may or may not exist since many devices, especially "smart home" devices, are made for exactly that: homes with a private Wi-Fi network, not campuses with enterprise-grade Wi-Fi networks). If buying online such as from Amazon, make sure to look at comments and reviews to verify that the device does in fact work on both 2.4 GHz and 5 GHz bands.
                 2. Set up your own router. You can purchase your own router and get it connected to the Stanford network, and the router should be able to broadcast both 2.4 GHz and 5 GHz bands correctly for the device to connect to. We can guide you through the process of setting up your router if you choose to go this route.
                 
                 Please let us know if you have questions or issues.
@@ -692,6 +693,39 @@
         },
         {
             triggers: [
+                "link.forget_wifi.mac",
+                "link.forget_wifi.macbook",
+                "link.forget_wifi.macos",
+                "link.forget_wifi.osx"
+            ],
+            value: `https://stanford.service-now.com/student_services?id=kb_article&number=KB00018430`,
+            description: "Link to instructions for forgetting Wi-Fi networks on MacBooks"
+        },
+        {
+            triggers: [
+                "link.forget_wifi.windows",
+                "link.forget_wifi.pc",
+            ],
+            value: `https://stanford.service-now.com/student_services?id=kb_article&number=KB00018429`,
+            description: "Link to instructions for forgetting Wi-Fi networks on Windows PCs"
+        },
+        {
+            triggers: [
+                "link.forget_wifi.ios",
+                "link.forget_wifi.iphone",
+            ],
+            value: `https://stanford.service-now.com/student_services?id=kb_article&number=KB00018427`,
+            description: "Link to instructions for forgetting Wi-Fi networks on iPhones"
+        },
+        {
+            triggers: [
+                "link.forget_wifi.android"
+            ],
+            value: `https://stanford.service-now.com/student_services?id=kb_article&number=KB00018428`,
+            description: "Link to instructions for forgetting Wi-Fi networks on Android phones"
+        },
+        {
+            triggers: [
                 "link.enrollment_quiz",
                 "link.enrollment_questionnaire",
                 "link.enrollment"
@@ -794,6 +828,15 @@
             ],
             value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/info.svg" alt="info icon"/>[/code]`,
             description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/info.svg" alt="circled info icon"/>"`
+        },
+        {
+            triggers: [
+                "icon.apple",
+                "icon.apple_logo",
+                "icon.apple_menu"
+            ],
+            value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/apple.svg" alt="Apple logo"/>[/code]`,
+            description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/apple.svg" alt="black Apple logo"/>"`
         }
     ];
 
@@ -921,6 +964,9 @@
         // ignore all the text inside the [code] blocks and treat it as a regular span of text. Once
         // it has been parsed, we go back through and replace each "[code][/code]" marker with all
         // the text was original inside them so that the text inside remains unparsed. 
+
+        // If the entire text is just "[code][/code]", we return as normal instead of returning "".
+        if (text == "[code][/code]") return text;
 
         // filteredText is the text once all the [code] blocks have been filtered out.
         let filteredText = "";
@@ -1750,58 +1796,74 @@
 
     const OUIsPopulated = new Promise(function (resolve, reject) {
         const url = "https://gitlab.com/wireshark/wireshark/-/raw/master/manuf";
-        const xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         // Use allorigins.win to override the CORS policy
         xhr.open("GET", `https://api.allorigins.win/get?url=${encodeURIComponent(url)}&timestamp=${new Date().valueOf()}`);
         xhr.addEventListener("readystatechange", function () {
             if (this.readyState == 4) {
                 if (this.status == 200) {
-                    // The list of OUIs we will populate.
-                    const OUIs = {};
-                    const response = JSON.parse(this.response).contents;
-                    // Separate the response into lines.
-                    for (let index = 0; ~(index = response.indexOf("\n", index)); index++) {
-                        // If the beginning of this line starts with a "#", it is a comment and we can
-                        // ignore it.
-                        if (response[index + 1] == "#" || response[index + 1] == "\n") {
-                            continue;
-                        }
-                        // Get the line as a standalone string.
-                        const line = response.substring(index + 1, response.indexOf("\n", index + 1));
-                        // Split it by tabs to get the individual components.
-                        const components = line.split("\t");
-                        let slashIndex;
-
-                        // The 0th item is the MAC address prefix. It can be in the form of 6 digits
-                        // or a full MAC address followed by a "/" and number. The number indicates
-                        // how many digits the prefix is.
-                        // E.g., "A1:B2:C3:D4:E5:F6/36" indicates we should look at the first 36/4=9
-                        // digits only.
-                        // A six-digit MAC address is treated as the full six digits.
-                        if (components[0].length == 8) { // 6 digits plus 2 colons
-                            // The 2nd item is the full name of the vendor. The 1st item is the
-                            // shortened name of the vendor. We prefer to use the full name but go
-                            // to the short name when that's not available
-                            OUIs[components[0]] = components[2] || components[1];
-                        } else if (components[0][17] == "/") {
-                            // If we find a prefix length with other than 6, we overwrite the OUI
-                            // for the six digit version with the new length.
-                            let digits = parseInt(components[0].substring(18)) / 4;
-                            let prefix = components[0].substring(0, digits + Math.ceil(digits / 2 - 1));
-                            OUIs[components[0].substring(0, 8)] = prefix.length;
-                            OUIs[prefix] = components[2] || components[1];
-                        } else {
-                            continue;
-                        }
-                    }
-                    resolve(OUIs);
+                    resolve(getOUIObject(JSON.parse(this.response).contents));
                 } else {
-                    reject(this.response);
+                    // If allorigins.win fails, we fallback to a list on the GitHub repo.
+                    console.log("FAILED ONE")
+                    xhr = new XMLHttpRequest();
+                    xhr.open("GET", `https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/OUI_list.txt?timestamp=${new Date().valueOf()}`);
+                    xhr.addEventListener("readystatechange", function () {
+                        if (this.readyState == 4) {
+                            if (this.status == 200) {
+                                resolve(getOUIObject(this.response));
+                            } else {
+                                // If this failed too, we just give up.
+                                reject(this.response);
+                            }
+                        }
+                    });
+                    xhr.send();
                 }
             }
         });
         xhr.send();
     });
+    
+    function getOUIObject(response) {
+        // The list of OUIs we will populate.
+        const OUIs = {};
+        // Separate the response into lines.
+        for (let index = 0; ~(index = response.indexOf("\n", index)); index++) {
+            // If the beginning of this line starts with a "#", it is a comment and we can ignore
+            // it.
+            if (response[index + 1] == "#" || response[index + 1] == "\n") {
+                continue;
+            }
+            // Get the line as a standalone string.
+            const line = response.substring(index + 1, response.indexOf("\n", index + 1));
+            // Split it by tabs to get the individual components.
+            const components = line.split("\t");
+
+            // The 0th item is the MAC address prefix. It can be in the form of 6 digits or a full
+            // MAC address followed by a "/" and number. The number indicates how many digits the
+            // prefix is.
+            // E.g., "A1:B2:C3:D4:E5:F6/36" indicates we should look at the first 36/4=9 digits
+            // only.
+            // A six-digit MAC address is treated as the full six digits.
+            if (components[0].length == 8) { // 6 digits plus 2 colons
+                // The 2nd item is the full name of the vendor. The 1st item is the shortened name
+                // of the vendor. We prefer to use the full name but go to the short name when
+                // that's not available
+                OUIs[components[0]] = components[2] || components[1];
+            } else if (components[0][17] == "/") {
+                // If we find a prefix length with other than 6, we overwrite the OUI for the six
+                // digit version with the new length.
+                let digits = parseInt(components[0].substring(18)) / 4;
+                let prefix = components[0].substring(0, digits + Math.ceil(digits / 2 - 1));
+                OUIs[components[0].substring(0, 8)] = prefix.length;
+                OUIs[prefix] = components[2] || components[1];
+            } else {
+                continue;
+            }
+        }
+        return OUIs;
+    }
 
     const MAC_ADDRESS_SPAN_STYLES = `
         .${CSS_PREFIX}-smart-text-span {
@@ -1972,7 +2034,7 @@
                     const formatted = macAddressMatch[0].toUpperCase().replace(/[^A-F\d]/g, "").replace(/(.{2})/g, ":$1").substring(1);
                     const macSpan = document.createElement("span");
                     macSpan.classList.add(`${CSS_PREFIX}-smart-text-span`);
-                    macSpan.innerHTML = `<span>${macAddressMatch[0]}</span><span><input value="${macAddressMatch[0]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>MAC Address</li><li class="${CSS_PREFIX}-mac-address-oui" style="font-style:italic">Loading OUIs...</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Nodes&purge=">NetDB</a></li><li><a target="dhcp_log" href="http://day.stanford.edu:9696/manage/dhcplog/check_db?input=${formatted}">DHCP Log</a></li><li><a target="mydevices" href="https://mydevices.stanford.edu/group/mydevices?${encodeURIComponent(`${CSS_PREFIX}-search-mac`)}=${encodeURIComponent(formatted)}">MyDevices</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
+                    macSpan.innerHTML = `<span>${macAddressMatch[0]}</span><span><input value="${macAddressMatch[0]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>MAC Address</li><li class="${CSS_PREFIX}-mac-address-oui" style="font-style:italic">Loading OUIs...</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/fs_node_result?display_order.hardware_address=1&display_order.object=2&display_order.ip_address=3&display_order.node_state=4&display_order.make_and_model=5&display_order.os=6&display_order.department=7&display_order.user=8&column=Name&direction=ascending&purge=&hardware_address=${formatted}">NetDB</a></li><li><a target="dhcp_log" href="http://day.stanford.edu:9696/manage/dhcplog/check_db?input=${formatted}">DHCP Log</a></li><li><a target="mydevices" href="https://mydevices.stanford.edu/group/mydevices?${encodeURIComponent(`${CSS_PREFIX}-search-mac`)}=${encodeURIComponent(formatted)}">MyDevices</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
 
                     macSpan.addEventListener("click", e => e.stopPropagation());
 
@@ -2029,7 +2091,7 @@
                     let formatted = ipAddressMatch[2];
                     const ipSpan = document.createElement("span");
                     ipSpan.classList.add(`${CSS_PREFIX}-smart-text-span`);
-                    ipSpan.innerHTML = `${ipAddressMatch[1]}<span>${ipAddressMatch[2]}</span><span><input value="${ipAddressMatch[2]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>IP Address</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/qsearch?search_string=${formatted}&search_type=Networks&purge=">NetDB</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=${encodeURIComponent(formatted)}&macaddress=&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
+                    ipSpan.innerHTML = `${ipAddressMatch[1]}<span>${ipAddressMatch[2]}</span><span><input value="${ipAddressMatch[2]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>IP Address</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/fs_network_result?display_order.object=1&display_order.location=2&display_order.address_space=2&display_order.comment=3&purge=&dhcp_address=${formatted}">NetDB</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=${encodeURIComponent(formatted)}&macaddress=&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
 
                     ipSpan.addEventListener("click", e => e.stopPropagation());
 
