@@ -3,8 +3,9 @@
 // @namespace   https://github.com/FiggChristian/PTS-Scripts
 // @match       *://stanford.service-now.com/ticket.do*
 // @match       *://stanford.service-now.com/incident.do*
+// @match       *://stanford.service-now.com/sc_task.do*
 // @match       *://mydevices.stanford.edu/*
-// @version     1.1.3
+// @version     1.2.0
 // @description Adds macros, replacements, and Markdown support to ServiceNow tickets.
 // @icon        https://stanford.service-now.com/stanford_favicon.png
 // @downloadURL https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/master/ServiceNow/service-now.user.js
@@ -70,25 +71,24 @@
             type: PUBLIC
         },
         {
-            name: "Upgrade to Windows 10 Education",
+            name: "Wireless Trouble",
             value: `
                 Hello ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
 
-                You can upgrade your version of Windows 10 to Windows 10 Education (which is compatible with Stanford's encryption software and BitLocker) by following these steps:
-                
-                1. Go to [Stanford's Software Licensing Webstore](https://stanford.onthehub.com/WebStore/OfferingDetails.aspx?o=bb702eb6-cbf8-e811-810d-000d3af41938) to get your free product key of Windows 10 Education (one per student).
-                2. Right click the **Start Menu** from your desktop.
-                3. Select **System**.
-                4. Click **Change product key**.
-                5. Copy & paste the 25-digit license key from step 1.
-                6. Allow the system to reboot (may take 5–10 minutes).
-                
-                Hope this helps. Lets us know if you have any questions or issues.
-                
+                Thank you for reporting your trouble with the wireless network connectivity on the Stanford campus. There are some easy steps to take that resolve wireless network issues for most registered devices on campus:
+
+                1. Forget/remove "Stanford Visitor" and "eduroam" wireless networks from your device. Connect only to the "Stanford" wireless network. You can find instructions for forgetting a Wi-Fi network here: [Mac](${START_DELIMITER}link.forget_wifi.mac${END_DELIMITER}) | [Windows](${START_DELIMITER}link.forget_wifi.windows${END_DELIMITER}) | [iOS](${START_DELIMITER}link.forget_wifi.ios${END_DELIMITER}) | [Android](${START_DELIMITER}link.forget_wifi.android${END_DELIMITER})
+                2. Toggle the Wi-Fi on your device off and back on again.
+                3. Completely power down and restart your computer or device.
+
+                In the event that these steps don't resolve your wireless trouble, please find your device's MAC address and send it to us so we may begin troubleshooting for you.  Please see the following resource for additional information about finding your MAC address: ${START_DELIMITER}link.mac_address${END_DELIMITER}
+
+                Again, we will require the MAC address of the device that you would like assistance with in order to help you. Thank you for your patience and cooperation.
+
                 Best,
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
-            description: "Gives the user step-by-step instructions for upgrading to Windows 10 Education",
+            description: "Gives the user instructions for troubleshooting Wi-Fi",
             type: PUBLIC
         },
         {
@@ -115,23 +115,6 @@
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
             description: "Gives the user step-by-step instructions for registering a device through IPRequest",
-            type: PUBLIC
-        },
-        {
-            name: "Bad Wi-Fi Connection",
-            value: `
-                Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
-                
-                Our first recommendation is that you "forget" all of the Stanford wireless networks (Stanford Visitor, Stanford, eduroam, Stanford Secure) from any affected device's remembered networks, and then "Rejoin" only the Stanford network. You can find instructions for doing this here: [Mac](${START_DELIMITER}link.forget_wifi.mac${END_DELIMITER}) | [Windows](${START_DELIMITER}link.forget_wifi.windows${END_DELIMITER}) | [iOS](${START_DELIMITER}link.forget_wifi.ios${END_DELIMITER}) | [Android](${START_DELIMITER}link.forget_wifi.android${END_DELIMITER}). Please do not connect to other networks until we complete our troubleshooting process with you.
-                
-                If you continue to experience trouble, please glance at the clock and note the time, what program you were using, and where you were sitting in your apartment.  We can use this information to open a report with networking to investigate the performance of the wireless system in your apartment.  Three of these notes will be enough information for networking to create a very comprehensive picture of what the trouble might be and get a faster resolution.
-                
-                It is best to troubleshoot one wireless device at a time, as any adjustments made to the wireless system may improve the connections for other devices nearby.
-                
-                Best,
-                ${START_DELIMITER}current_user.name.first${END_DELIMITER}
-            `,
-            description: "Asks the user for more information when their Wi-Fi is bad",
             type: PUBLIC
         },
         {
@@ -175,6 +158,28 @@
             type: PUBLIC
         },
         {
+            name: "Upgrade to Windows 10 Education",
+            value: `
+                Hello ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
+
+                You can upgrade your version of Windows 10 to Windows 10 Education (which is compatible with Stanford's encryption software and BitLocker) by following these steps:
+                
+                1. Go to [Stanford's Software Licensing Webstore](https://stanford.onthehub.com/WebStore/OfferingDetails.aspx?o=bb702eb6-cbf8-e811-810d-000d3af41938) to get your free product key of Windows 10 Education (one per student).
+                2. Right click the **Start Menu** from your desktop.
+                3. Select **System**.
+                4. Click **Change product key**.
+                5. Copy & paste the 25-digit license key from step 1.
+                6. Allow the system to reboot (may take 5–10 minutes).
+                
+                Hope this helps. Lets us know if you have any questions or issues.
+                
+                Best,
+                ${START_DELIMITER}current_user.name.first${END_DELIMITER}
+            `,
+            description: "Gives the user step-by-step instructions for upgrading to Windows 10 Education",
+            type: PUBLIC
+        },
+        {
             name: "Unregistered MAC Address",
             value: `
                 Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
@@ -188,6 +193,26 @@
             `,
             description: "Gives the user instructions for registering their device once they've provided an unregistered MAC address",
             type: PUBLIC
+        },
+        {
+            name: "Net Trouble Report",
+            value: `
+                ### Network Trouble Report
+
+                Wireless/wired/both: ${CURSOR()}
+                MAC addresses: ${CURSOR()}
+                Device description: ${CURSOR()}
+                Operating system: ${CURSOR()}
+                1st timestamp: ${CURSOR()}
+                2nd timestamp: ${CURSOR()}
+                3rd timestamp: ${CURSOR()}
+                Specific location of issue inside apartment: ${CURSOR()}
+                Nature of issue (slow, trouble connecting, dropped sessions, poor coverage): ${CURSOR()}
+                Specific issue details: ${CURSOR()}
+                Troubleshooting attempted thus far: ${CURSOR()}
+            `,
+            description: "Shows the form to fill out to submit a report to the NetTrouble team",
+            type: PRIVATE
         },
         {
             name: "2.4 GHz-Only Devices",
@@ -208,23 +233,6 @@
             `,
             description: "Explains what to do for devices that only work on 2.4 a GHz band",
             type: PUBLIC,
-        },
-        {
-            name: "Manual MyDevices Enrollment",
-            value: `
-                Hello ${START_DELIMITER}ticket.requester.first_name${END_DELIMITER},
-                
-                We have manually enrolled this device into the encryption compliance program and have indicated that you will not use this device to manage high risk data. The MyDevices website updates approximately every 12 hours so it may be awhile before you see the device listed.  
-
-                This should resolve the issue regarding "${START_DELIMITER}ticket.title${END_DELIMITER}", and aside from waiting 12-24 hours before confirming the change showing up in your MyDevices, there should be no further action required on your part.
-                
-                Please do let us know if you have any issues in the future.
-                
-                Thanks!
-                [code]<!-- Delete this line: ${CURSOR("https://web.stanford.edu/dept/its/cgi-bin/services/endpoints/web/enter_enrollment_data.php")} -->[/code]
-            `,
-            description: "Indicates that a device has been manually enrolled into MyDevices",
-            type: PUBLIC
         },
         {
             name: "Time Stamps",
@@ -277,23 +285,6 @@
                 ${START_DELIMITER}current_user.name.first${END_DELIMITER}
             `,
             description: "Lets the user know that the device has been blocked due to compliance and gives them instructions for how to resolve it",
-            type: PUBLIC
-        },
-        {
-            name: "DNS Check",
-            value: `
-                Hi ${START_DELIMITER}ticket.requester.name.first${END_DELIMITER},
-
-                We suspect that your computer's current DNS settings are preventing it from reaching the Stanford network properly. While you should receive an appropriate DNS address simply by connecting to the network, your computer may be set so that is not happening automatically. You can manually set the DNS addresses for your computer to the following:
-
-                \`171.64.1.234\` and \`171.67.1.234\`
-                
-                If this does not resolve the issue, we recommend that you can schedule a virtual appointment through ${START_DELIMITER}link.appointment${END_DELIMITER} to have live assistance to help you get a further troubleshooting.
-
-                Best,
-                ${START_DELIMITER}current_user.name.first${END_DELIMITER}
-            `,
-            description: "Explains to the user how to reset a device's DNS record",
             type: PUBLIC
         }
     ];
@@ -882,6 +873,12 @@
         return;
     }
 
+    const TICKET_TYPE = location.pathname == "/sc_task.do" ? "TASK" : location.pathname == "/incident.do" ? "INC" : location.pathname == "/ticket.do" ? "TICKET" : null;
+    const DO_MACROS = TICKET_TYPE != "TASK";
+    const DO_REPLACEMENTS = true;
+    const DO_MARKDOWN = TICKET_TYPE != "TASK";
+    const DO_SMART_TEXT = TICKET_TYPE != "TASK";
+
     const _MACROS = {};
     for (const macro of MACROS) {
         if ("name" in macro) {
@@ -1106,7 +1103,7 @@
                 return `[code]<p>[/code]${text}[code]</p>[/code]`;
             },
             table: function (header, body) {
-                return `[code]<table><thead>[/code]${header}[code]</thead><tbody>[/code]${body}[code]</tbody></table>[/code]`;
+                return `[code]<table style="border-collapse:collapse"><thead style="vertical-align:top">[/code]${header}[code]</thead><tbody style="vertical-align:top">[/code]${body}[code]</tbody></table>[/code]`;
             },
             tablerow: function (content) {
                 return `[code]<tr>[/code]${content}[code]</tr>[/code]`;
@@ -1492,15 +1489,30 @@
             }
         }
 
-        // Add the default caretPosition on to the end so that the cursor will always end up there.
-        caretPositions.push([caretPosition, caretPosition]);
+        // If there are no ${CURSOR()} markers, add the current caretPosition so that the caret goes
+        // back to where it was originally.
+        if (!caretPositions.length) {
+            caretPositions = [[caretPosition, caretPosition]]
+        }
 
-        // caretPositions may have multiple positions where we can place the caret. For now, we just
-        // look at the first one, although this may change in the future.
+        // If there are multiple ${CURSOR()} markers, show the tab indicator to show that.
+        if (caretPositions.length > 1) {
+            textareaData.tabIndicator.style.display = "";
+            textareaData.isTabbing = true;
+            textareaData.tabFieldIndex = 1;
+            textareaData.tabIndicator.lastElementChild.innerText = `${textareaData.tabFieldIndex}/${caretPositions.length}`;
+            textareaData.textBetweenFields = new Array(caretPositions.length + 1);
+            for (let i = 0, lastIndex = 0; i < caretPositions.length; i++) {
+                textareaData.textBetweenFields[i] = value.substring(lastIndex, caretPositions[i][0]);
+                lastIndex = caretPositions[i][1];
+            }
+            textareaData.textBetweenFields[caretPositions.length] = value.substring(caretPositions[caretPositions.length - 1][1]);
+        }
 
         // If the textarea's value doesn't need to be updated to begin with, there's no point in
         // messing with it at all, and we can just return without making any changes.
         if (textareaData.element.value == value && caretPositions.length == 1) {
+            textareaData.element.focus();
             return;
         }
 
@@ -1773,26 +1785,90 @@
 
     window.addEventListener("resize", updateTextareas);
 
-    document.addEventListener("input", function (e) {
-        updateTextareas();
-        const textareaData = textareaDatas.get(e.target);
-        if (textareaData) {
-            if (!textareaData.suppressInputs) {
-                checkReplacements(textareaData);
+    if (DO_REPLACEMENTS) {
+        document.addEventListener("input", function (e) {
+            updateTextareas();
+            const textareaData = textareaDatas.get(e.target);
+            if (textareaData) {
+                if (!textareaData.suppressInputs) {
+                    checkReplacements(textareaData);
+                }
+                showOrHideAutoFiller(textareaData);
+                if (textareaData.autoFilling) {
+                    populateAutoFiller(textareaData);
+                }
             }
-            showOrHideAutoFiller(textareaData);
-            if (textareaData.autoFilling) {
-                populateAutoFiller(textareaData);
-            }
-        }
-    });
+        });
 
-    document.addEventListener("selectionchange", function (e) {
-        const textareaData = textareaDatas.get(document.activeElement);
-        if (textareaData) {
-            updateTextareaSelection(textareaData);
-        }
-    });
+        document.addEventListener("selectionchange", function (e) {
+            const textareaData = textareaDatas.get(document.activeElement);
+            if (textareaData) {
+                updateTextareaSelection(textareaData);
+                if (textareaData.wasTabbing || textareaData.isTabbing) {
+                    // Determine which field is currently focused.
+                    const caretPos = textareaData.element.selectionStart;
+                    const value = textareaData.element.value;
+                    const betweenText = textareaData.textBetweenFields;
+
+                    // Try to match the beginning of the text.
+                    if (!Array.isArray(betweenText) || !value.startsWith(betweenText[0])) {
+                        textareaData.isTabbing = false;
+                        textareaData.wasTabbing = false;
+                        textareaData.textBetweenFields = null;
+                        textareaData.tabFieldIndex = 0;
+                        textareaData.tabIndicator.style.display = "none";
+                        return;
+                    }
+
+                    // If the caret is before the first field, make the index 0.5 to indicate it is
+                    // between 0 and 1.
+                    if (caretPos < betweenText[0].length) {
+                        textareaData.isTabbing = false;
+                        textareaData.wasTabbing = true;
+                        textareaData.tabFieldIndex = 0.5;
+                        textareaData.tabIndicator.style.display = "none";
+                        return;
+                    }
+
+                    let lastIndex = betweenText[0].length;
+                    for (let i = 1; i < betweenText.length; i++) {
+                        const index = value.indexOf(betweenText[i], lastIndex)
+                        // If we can't match the text, we should stop allowing tabs since the text
+                        // in between has changed and we can't match it anymore.
+                        if (!~index) {
+                            textareaData.isTabbing = false;
+                            textareaData.wasTabbing = false;
+                            textareaData.textBetweenFields = null;
+                            textareaData.tabFieldIndex = 0;
+                            textareaData.tabIndicator.style.display = "none";
+                            return;
+                        }
+                        // If our caret is before the next index of matched text, it means our caret
+                        // is focusing on this field.
+                        if (caretPos <= index) {
+                            textareaData.isTabbing = true;
+                            textareaData.wasTabbing = false;
+                            textareaData.tabFieldIndex = i;
+                            textareaData.tabIndicator.lastElementChild.innerText = `${i}/${betweenText.length - 1}`;
+                            textareaData.tabIndicator.style.display = "";
+                            return;
+                        }
+
+                        lastIndex = index + betweenText[i].length;
+                        // If our caret is somewhere in the text between fields, make our index half
+                        // way in between the two.
+                        if (caretPos < lastIndex) {
+                            textareaData.isTabbing = false;
+                            textareaData.wasTabbing = true;
+                            textareaData.tabFieldIndex = i + 0.5;
+                            textareaData.tabIndicator.lastElementChild.innerText = `?/${betweenText.length - 1}`;
+                            return;
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     const OUIsPopulated = new Promise(function (resolve, reject) {
         const url = "https://gitlab.com/wireshark/wireshark/-/raw/master/manuf";
@@ -1805,7 +1881,6 @@
                     resolve(getOUIObject(JSON.parse(this.response).contents));
                 } else {
                     // If allorigins.win fails, we fallback to a list on the GitHub repo.
-                    console.log("FAILED ONE")
                     xhr = new XMLHttpRequest();
                     xhr.open("GET", `https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/OUI_list.txt?timestamp=${new Date().valueOf()}`);
                     xhr.addEventListener("readystatechange", function () {
@@ -1824,7 +1899,7 @@
         });
         xhr.send();
     });
-    
+
     function getOUIObject(response) {
         // The list of OUIs we will populate.
         const OUIs = {};
@@ -1920,6 +1995,7 @@
         .${CSS_PREFIX}-smart-text-popup {
             display: none;
             position: absolute;
+            top: initial;
             bottom: calc(100% + .5rem);
             left: 50%;
             background-color: white;
@@ -2034,7 +2110,7 @@
                     const formatted = macAddressMatch[0].toUpperCase().replace(/[^A-F\d]/g, "").replace(/(.{2})/g, ":$1").substring(1);
                     const macSpan = document.createElement("span");
                     macSpan.classList.add(`${CSS_PREFIX}-smart-text-span`);
-                    macSpan.innerHTML = `<span>${macAddressMatch[0]}</span><span><input value="${macAddressMatch[0]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>MAC Address</li><li class="${CSS_PREFIX}-mac-address-oui" style="font-style:italic">Loading OUIs...</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/fs_node_result?display_order.hardware_address=1&display_order.object=2&display_order.ip_address=3&display_order.node_state=4&display_order.make_and_model=5&display_order.os=6&display_order.department=7&display_order.user=8&column=Name&direction=ascending&purge=&hardware_address=${formatted}">NetDB</a></li><li><a target="dhcp_log" href="http://day.stanford.edu:9696/manage/dhcplog/check_db?input=${formatted}">DHCP Log</a></li><li><a target="mydevices" href="https://mydevices.stanford.edu/group/mydevices?${encodeURIComponent(`${CSS_PREFIX}-search-mac`)}=${encodeURIComponent(formatted)}">MyDevices</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
+                    macSpan.innerHTML = `<span>${macAddressMatch[0]}</span><span><input value="${macAddressMatch[0]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup dropdown-menu"><li>MAC Address</li><li class="${CSS_PREFIX}-mac-address-oui" style="font-style:italic">Loading OUIs...</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/fs_node_result?display_order.hardware_address=1&display_order.object=2&display_order.ip_address=3&display_order.node_state=4&display_order.make_and_model=5&display_order.os=6&display_order.department=7&display_order.user=8&column=Name&direction=ascending&purge=&hardware_address=${formatted}">NetDB</a></li><li><a target="dhcp_log" href="http://day.stanford.edu:9696/manage/dhcplog/check_db?input=${formatted}">DHCP Log</a></li><li><a target="mydevices" href="https://mydevices.stanford.edu/group/mydevices?${encodeURIComponent(`${CSS_PREFIX}-search-mac`)}=${encodeURIComponent(formatted)}">MyDevices</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
 
                     macSpan.addEventListener("click", e => e.stopPropagation());
 
@@ -2091,7 +2167,7 @@
                     let formatted = ipAddressMatch[2];
                     const ipSpan = document.createElement("span");
                     ipSpan.classList.add(`${CSS_PREFIX}-smart-text-span`);
-                    ipSpan.innerHTML = `${ipAddressMatch[1]}<span>${ipAddressMatch[2]}</span><span><input value="${ipAddressMatch[2]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>IP Address</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/fs_network_result?display_order.object=1&display_order.location=2&display_order.address_space=2&display_order.comment=3&purge=&dhcp_address=${formatted}">NetDB</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=${encodeURIComponent(formatted)}&macaddress=&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
+                    ipSpan.innerHTML = `${ipAddressMatch[1]}<span>${ipAddressMatch[2]}</span><span><input value="${ipAddressMatch[2]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup dropdown-menu"><li>IP Address</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/fs_network_result?display_order.object=1&display_order.location=2&display_order.address_space=2&display_order.comment=3&purge=&dhcp_address=${formatted}">NetDB</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=${encodeURIComponent(formatted)}&macaddress=&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
 
                     ipSpan.addEventListener("click", e => e.stopPropagation());
 
@@ -2127,7 +2203,7 @@
                     const formatted = nodeNameMatch[1];
                     const nodeSpan = document.createElement("span");
                     nodeSpan.classList.add(`${CSS_PREFIX}-smart-text-span`);
-                    nodeSpan.innerHTML = `<span>${nodeNameMatch[0]}</span><span><input value="${nodeNameMatch[0]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup"><li>Node Name</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/node_info?name=${formatted}.stanford.edu">NetDB</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=&hostname=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
+                    nodeSpan.innerHTML = `<span>${nodeNameMatch[0]}</span><span><input value="${nodeNameMatch[0]}" readonly/><ul class="${CSS_PREFIX}-smart-text-popup dropdown-menu"><li>Node Name</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="netdb" href="https://${NETDB_HOST}/node_info?name=${formatted}.stanford.edu">NetDB</a></li><li><a target="iprequest" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=&hostname=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
 
                     nodeSpan.addEventListener("click", e => e.stopPropagation());
 
@@ -2166,403 +2242,486 @@
         }
     }
 
+    // Find the indices where the tab field corresponding with the given index starts and end.
+    function getCaretIndicesOfTabField(textareaData, index) {
+        if (!Array.isArray(textareaData.textBetweenFields) || index < 1 || index >= textareaData.textBetweenFields) {
+            return null;
+        }
+
+        const value = textareaData.element.value;
+        const betweenText = textareaData.textBetweenFields;
+        if (!value.startsWith(betweenText[0])) {
+            return null;
+        }
+
+        let lastIndex = betweenText[0].length;
+        for (let i = 1; i < index; i++) {
+            const index = value.indexOf(betweenText[i], lastIndex)
+            if (!~index) {
+                return null;
+            }
+            lastIndex = index + betweenText[i].length;
+        }
+
+        const nextIndex = value.indexOf(betweenText[index], lastIndex);
+        if (!~nextIndex) {
+            return null;
+        }
+
+        return [lastIndex, nextIndex];
+    }
+
     function f() {
         let textareaElements = document.querySelectorAll(`textarea:not([data-${CSS_PREFIX}-found-textarea])`);
         for (const textarea of textareaElements) {
             textarea.setAttribute(`data-${CSS_PREFIX}-found-textarea`, "true");
-
-            let styles = getComputedStyle(textarea);
-            let mirror = document.createElement("div");
-            mirror.classList.add(`${CSS_PREFIX}-textarea-mirror`);
-            mirror.style.width =
-                textarea.getBoundingClientRect().width -
-                parseFloat(styles.paddingLeft) -
-                parseFloat(styles.paddingRight) -
-                parseFloat(styles.borderLeftWidth) -
-                parseFloat(styles.borderRightWidth) + "px";
-            mirror.style.fontFamily = styles.fontFamily;
-            mirror.style.fontWeight = styles.fontWeight;
-            mirror.style.fontStyle = styles.fontStyle;
-            mirror.style.fontSize = styles.fontSize;
-            mirror.style.lineHeight = styles.lineHeight;
-            document.body.appendChild(mirror);
-
-            let autoFiller = document.createElement("ul");
-            autoFiller.classList.add(`${CSS_PREFIX}-auto-filler`, "h-card");
-            autoFiller.style.display = "none";
-            textarea.parentNode.insertBefore(autoFiller, textarea.nextElementSibling);
-
-            let markdownPreviewer = document.createElement("div");
-            markdownPreviewer.classList.add(`${CSS_PREFIX}-textarea-md-preview`, "form-control");
-            markdownPreviewer.setAttribute(`data-${CSS_PREFIX}-is-previewing`, "false");
-            markdownPreviewer.style.display = "none";
-            let markdownPreviewerRoot = markdownPreviewer.attachShadow({ mode: "open" });
-            markdownPreviewerRoot.innerHTML = `<style>${MAC_ADDRESS_SPAN_STYLES}</style><link href="styles/activity_encapsulated.css" rel="stylesheet" type="text/css"><style>:host img{max-width:100%;height:auto;overflow-y:visible}</style><div style="overflow-y:visible;padding:0 18px;border-top:1px solid transparent;border-bottom:1px solid transparent;margin:-1px 0"></div>`;
-            textarea.parentNode.insertBefore(markdownPreviewer, textarea.nextElementSibling);
-
-            function parentFocusOut(e) {
-                if (e.relatedTarget === null || (e.relatedTarget instanceof HTMLElement && !e.currentTarget.contains(e.relatedTarget))) {
-                    showOrHideAutoFiller(textareaData);
-                }
-            }
-            textarea.parentNode.addEventListener("focusout", parentFocusOut);
+            const styles = getComputedStyle(textarea);
 
             let textareaData = {
                 element: textarea,
-                mirror: mirror,
-                autoFiller: autoFiller,
-                oldHeight: null,
-                autoFilling: false,
-                autoFillerVisibleIndices: [],
-                markdownPreviewer: markdownPreviewer,
-                markdownPreviewerRoot: markdownPreviewerRoot.lastElementChild,
-                caretTop: null,
-                caretLeft: null,
-                styles: styles,
                 elementParent: textarea.parentNode,
-                elementParentFocusOutListener: parentFocusOut
+                styles: styles
             };
-            textareaDatas.set(textarea, textareaData);
 
-            textarea.addEventListener("keydown", function (e) {
-                // Only intercept keypresses when the autFiller is open.
-                if (textareaData.autoFilling) {
-                    if (e.code == "ArrowDown") {
-                        // An arrow down should move the focus down one.
-                        if (textareaData.autoFillerFocusedIndex < textareaData.autoFiller.children.length - 1) {
-                            e.preventDefault();
-                            textareaData.autoFillerFocusedIndex++;
-                            focusAutoFillItem(textareaData);
-                        }
-                    } else if (e.code == "ArrowUp") {
-                        // An arrow up should move the focus up one.
-                        if (textareaData.autoFillerFocusedIndex > 0) {
-                            e.preventDefault();
-                            textareaData.autoFillerFocusedIndex--;
-                            focusAutoFillItem(textareaData);
-                        }
-                    } else if (e.code == "Tab" || e.code == "Enter") {
-                        // A Tab or Enter is used to "click" on the currently selected item from the
-                        // list. Normally, a button only activates on Spacebar and Enter, but Tab is
-                        // more natural for auto-completing, and Spacebar instead should insert an
-                        // actual space.
-                        e.preventDefault();
-                        textareaData.autoFiller.children[textareaData.autoFillerFocusedIndex].click();
+            if (DO_REPLACEMENTS) {
+                let mirror = document.createElement("div");
+                mirror.classList.add(`${CSS_PREFIX}-textarea-mirror`);
+                mirror.style.width =
+                    textarea.getBoundingClientRect().width -
+                    parseFloat(styles.paddingLeft) -
+                    parseFloat(styles.paddingRight) -
+                    parseFloat(styles.borderLeftWidth) -
+                    parseFloat(styles.borderRightWidth) + "px";
+                mirror.style.fontFamily = styles.fontFamily;
+                mirror.style.fontWeight = styles.fontWeight;
+                mirror.style.fontStyle = styles.fontStyle;
+                mirror.style.fontSize = styles.fontSize;
+                mirror.style.lineHeight = styles.lineHeight;
+                document.body.appendChild(mirror);
+
+                let autoFiller = document.createElement("ul");
+                autoFiller.classList.add(`${CSS_PREFIX}-auto-filler`, "h-card", "dropdown-menu");
+                autoFiller.style.display = "none";
+                textarea.parentNode.appendChild(autoFiller);
+
+                function parentFocusOut(e) {
+                    if (e.relatedTarget === null || (e.relatedTarget instanceof HTMLElement && !e.currentTarget.contains(e.relatedTarget))) {
+                        showOrHideAutoFiller(textareaData);
+                        textareaData.isTabbing = false;
+                        textareaData.wasTabbing = true;
+                        textareaData.tabIndicator.style.display = "none";
                     }
                 }
-            });
+                textarea.parentNode.addEventListener("focusout", parentFocusOut);
 
-            textarea.addEventListener("mousedown", function (e) {
-                updateTextareaSelection(textareaData);
-            });
+                textarea.addEventListener("keydown", function (e) {
+                    // Only intercept keypresses when the autoFiller is open.
+                    if (textareaData.autoFilling) {
+                        if (e.code == "ArrowDown") {
+                            // An arrow down should move the focus down one.
+                            if (textareaData.autoFillerFocusedIndex < textareaData.autoFiller.children.length - 1) {
+                                e.preventDefault();
+                                textareaData.autoFillerFocusedIndex++;
+                                focusAutoFillItem(textareaData);
+                            }
+                        } else if (e.code == "ArrowUp") {
+                            // An arrow up should move the focus up one.
+                            if (textareaData.autoFillerFocusedIndex > 0) {
+                                e.preventDefault();
+                                textareaData.autoFillerFocusedIndex--;
+                                focusAutoFillItem(textareaData);
+                            }
+                        } else if (e.code == "Tab" || e.code == "Enter") {
+                            // A Tab or Enter is used to "click" on the currently selected item from the
+                            // list. Normally, a button only activates on Spacebar and Enter, but Tab is
+                            // more natural for auto-completing, and Spacebar instead should insert an
+                            // actual space.
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                            textareaData.autoFiller.children[textareaData.autoFillerFocusedIndex].click();
+                        }
+                    }
+                });
 
-            textarea.addEventListener("mouseup", function (e) {
-                updateTextareaSelection(textareaData);
-            });
+                textarea.addEventListener("mousedown", function (e) {
+                    updateTextareaSelection(textareaData);
+                });
+
+                textarea.addEventListener("mouseup", function (e) {
+                    updateTextareaSelection(textareaData);
+                });
+
+                textareaData.mirror = mirror;
+                textareaData.autoFiller = autoFiller;
+                textareaData.autoFilling = false;
+                textareaData.autoFillerVisibleIndices = [];
+                textareaData.caretTop = null;
+                textareaData.caretLeft = null;
+                textareaData.elementParentFocusOutListener = parentFocusOut;
+            }
+
+            if (DO_MARKDOWN) {
+                let markdownPreviewer = document.createElement("div");
+                markdownPreviewer.classList.add(`${CSS_PREFIX}-textarea-md-preview`, "form-control");
+                markdownPreviewer.setAttribute(`data-${CSS_PREFIX}-is-previewing`, "false");
+                markdownPreviewer.style.display = "none";
+                let markdownPreviewerRoot = markdownPreviewer.attachShadow({ mode: "open" });
+                markdownPreviewerRoot.innerHTML = `<style>${MAC_ADDRESS_SPAN_STYLES}</style><link href="styles/activity_encapsulated.css" rel="stylesheet" type="text/css"><style>:host img{max-width:100%;height:auto;overflow-y:visible}</style><div style="overflow-y:visible;padding:0 18px;border-top:1px solid transparent;border-bottom:1px solid transparent;margin:-1px 0"></div>`;
+                textarea.parentNode.insertBefore(markdownPreviewer, textarea.nextElementSibling);
+
+                textareaData.oldHeight = null;
+                textareaData.markdownPreviewer = markdownPreviewer;
+                textareaData.markdownPreviewerRoot = markdownPreviewerRoot.lastElementChild;
+            }
+
+            if (DO_REPLACEMENTS || DO_MACROS) {
+                let tabIndicator = document.createElement("div");
+                tabIndicator.innerHTML = `<button class="btn btn-default"><span class="icon icon-connect-close"></span></button>Use <kbd>Tab</kbd> to move to the next field (<span>0/0</span>)`;
+                tabIndicator.classList.add(`${CSS_PREFIX}-tab-indicator`, "form-control");
+                tabIndicator.style.display = "none";
+                textarea.parentNode.appendChild(tabIndicator);
+                textareaData.tabIndicator = tabIndicator;
+                textareaData.tabFieldIndex = 0;
+                textareaData.textBetweenFields = null;
+                tabIndicator.firstElementChild.addEventListener("mousedown", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+                tabIndicator.firstElementChild.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    textareaData.isTabbing = false;
+                    textareaData.wasTabbing = false;
+                    textareaData.tabFieldIndex = 0;
+                    textareaData.textBetweenFields = null;
+                    textareaData.tabIndicator.style.display = "none";
+                });
+
+                textarea.addEventListener("keydown", function (e) {
+                    if (e.code == "Tab" && (textareaData.isTabbing || textareaData.wasTabbing)) {
+                        const index = e.shiftKey ? Math.ceil(textareaData.tabFieldIndex) - 1 : Math.floor(textareaData.tabFieldIndex) + 1;
+                        let caretIndices = getCaretIndicesOfTabField(textareaData, index);
+                        // Allow a Tab event to go through as normal if we are no longer focusing on
+                        // a tabbable field.
+                        if (caretIndices) {
+                            e.preventDefault();
+                            textareaData.tabFieldIndex = index;
+                            textareaData.element.setSelectionRange(...caretIndices);
+                            tabIndicator.lastElementChild.innerText = `${textareaData.tabFieldIndex}/${textareaData.textBetweenFields.length - 1}`;
+                        }
+                    }
+                });
+            }
+
+            textareaDatas.set(textarea, textareaData);
         }
 
         let pullRightSections = document.querySelectorAll(`.sn-controls.row .pull-right:not([data-${CSS_PREFIX}-macro-btn-inserted])`);
-        for (const section of pullRightSections) {
-            section.setAttribute(`data-${CSS_PREFIX}-macro-btn-inserted`, "true");
-            let macroContainer = document.createElement("span");
-            macroContainer.classList.add(`${CSS_PREFIX}-macro-list-container`);
-            macroContainer.addEventListener("keydown", function (e) {
-                if (macroContainer.firstElementChild.getAttribute(`data-${CSS_PREFIX}-list-expanded`) == "true") {
-                    let index = +macroContainer.getAttribute(`data-${CSS_PREFIX}-focused-index`);
-                    if (e.code == "ArrowDown") {
-                        // An arrow down should move the focus down one.
-                        e.preventDefault();
-                        if (index < macroContainer.lastElementChild.children.length - 1) {
-                            macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, index + 1);
-                            focusMacroItem(macroContainer);
+        if (DO_MACROS) {
+            for (const section of pullRightSections) {
+                section.setAttribute(`data-${CSS_PREFIX}-macro-btn-inserted`, "true");
+                let macroContainer = document.createElement("span");
+                macroContainer.classList.add(`${CSS_PREFIX}-macro-list-container`);
+                macroContainer.addEventListener("keydown", function (e) {
+                    if (macroContainer.firstElementChild.getAttribute(`data-${CSS_PREFIX}-list-expanded`) == "true") {
+                        let index = +macroContainer.getAttribute(`data-${CSS_PREFIX}-focused-index`);
+                        if (e.code == "ArrowDown") {
+                            // An arrow down should move the focus down one.
+                            e.preventDefault();
+                            if (index < macroContainer.lastElementChild.children.length - 1) {
+                                macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, index + 1);
+                                focusMacroItem(macroContainer);
+                            }
+                        } else if (e.code == "ArrowUp") {
+                            // An arrow up should move the focus up one.
+                            e.preventDefault();
+                            if (index > 0) {
+                                macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, index - 1);
+                                focusMacroItem(macroContainer);
+                            } else if (index == 0) {
+                                // Close the menu and focus the button if we are already at the top.
+                                macroContainer.firstElementChild.setAttribute(`data-${CSS_PREFIX}-list-expanded`, "true");
+                                macroContainer.firstElementChild.click();
+                                macroContainer.firstElementChild.focus();
+                            }
+                        } else if (e.code == " " || e.code == "Enter") {
+                            // A Tab or Enter is used to "click" on the currently selected item from the
+                            // list. Normally, a button only activates on Spacebar and Enter, but Tab is
+                            // more natural for auto-completing, and Spacebar instead should insert an
+                            // actual space.
+                            e.preventDefault();
+                            macroContainer.lastElementChild.children[index].click();
                         }
-                    } else if (e.code == "ArrowUp") {
-                        // An arrow up should move the focus up one.
+                    } else if (document.activeElement == macroContainer.firstElementChild && e.code == "ArrowDown") {
+                        // If the menu is closed, and the button is focused, and we hit ArrowDown, we open
+                        // the menu.
                         e.preventDefault();
-                        if (index > 0) {
-                            macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, index - 1);
-                            focusMacroItem(macroContainer);
-                        } else if (index == 0) {
-                            // Close the menu and focus the button if we are already at the top.
-                            macroContainer.firstElementChild.setAttribute(`data-${CSS_PREFIX}-list-expanded`, "true");
-                            macroContainer.firstElementChild.click();
-                            macroContainer.firstElementChild.focus();
+                        macroContainer.firstElementChild.click();
+                    }
+                });
+                macroContainer.addEventListener("focusout", function (e) {
+                    if (e.relatedTarget === null || (e.relatedTarget instanceof HTMLElement && !macroContainer.contains(e.relatedTarget))) {
+                        // Set to true so we can toggle it to false.
+                        macroContainer.firstElementChild.setAttribute(`data-${CSS_PREFIX}-list-expanded`, "true");
+                        macroContainer.firstElementChild.click();
+                    }
+                });
+
+                let btn = document.createElement("button");
+                btn.classList.add(`${CSS_PREFIX}-macro-btn`, "btn", "btn-default");
+                btn.setAttribute(`data-${CSS_PREFIX}-list-expanded`, "false");
+                btn.setAttribute("type", "button");
+                btn.tabIndex = 0;
+                btn.innerText = "Apply Macro";
+                btn.addEventListener("mousedown", function (e) {
+                    // The <button> is receiving focus. Safari and Firefox have a bug where a <button> won't
+                    // be focused when you click on it
+                    // (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#clicking_and_focus)
+                    // so we have to do that ourselves.
+                    if (document.activeElement != btn) {
+                        btn.focus();
+                        e.preventDefault();
+                    }
+                });
+                btn.addEventListener("click", function (e) {
+                    let expanded = btn.getAttribute(`data-${CSS_PREFIX}-list-expanded`) != "true";
+                    btn.setAttribute(`data-${CSS_PREFIX}-list-expanded`, expanded);
+                    if (expanded) {
+                        macroContainer.lastElementChild.style.display = "block";
+                        macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, 0);
+                        focusMacroItem(macroContainer);
+                        let previewBtn = section.querySelector(`.${CSS_PREFIX}-preview-btn[data-${CSS_PREFIX}-is-previewing="true"]`);
+                        if (previewBtn) {
+                            previewBtn.click();
                         }
-                    } else if (e.code == " " || e.code == "Enter") {
-                        // A Tab or Enter is used to "click" on the currently selected item from the
-                        // list. Normally, a button only activates on Spacebar and Enter, but Tab is
-                        // more natural for auto-completing, and Spacebar instead should insert an
-                        // actual space.
-                        e.preventDefault();
-                        macroContainer.lastElementChild.children[index].click();
+                    } else {
+                        macroContainer.lastElementChild.style.display = "none";
                     }
-                } else if (document.activeElement == macroContainer.firstElementChild && e.code == "ArrowDown") {
-                    // If the menu is closed, and the button is focused, and we hit ArrowDown, we open
-                    // the menu.
-                    e.preventDefault();
-                    macroContainer.firstElementChild.click();
-                }
-            });
-            macroContainer.addEventListener("focusout", function (e) {
-                if (e.relatedTarget === null || (e.relatedTarget instanceof HTMLElement && !macroContainer.contains(e.relatedTarget))) {
-                    // Set to true so we can toggle it to false.
-                    macroContainer.firstElementChild.setAttribute(`data-${CSS_PREFIX}-list-expanded`, "true");
-                    macroContainer.firstElementChild.click();
-                }
-            });
+                });
+                macroContainer.appendChild(btn);
 
-            let btn = document.createElement("button");
-            btn.classList.add(`${CSS_PREFIX}-macro-btn`, "btn", "btn-default");
-            btn.setAttribute(`data-${CSS_PREFIX}-list-expanded`, "false");
-            btn.setAttribute("type", "button");
-            btn.tabIndex = 0;
-            btn.innerText = "Apply Macro";
-            btn.addEventListener("mousedown", function (e) {
-                // The <button> is receiving focus. Safari and Firefox have a bug where a <button> won't
-                // be focused when you click on it
-                // (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#clicking_and_focus)
-                // so we have to do that ourselves.
-                if (document.activeElement != btn) {
-                    btn.focus();
-                    e.preventDefault();
-                }
-            });
-            btn.addEventListener("click", function (e) {
-                let expanded = btn.getAttribute(`data-${CSS_PREFIX}-list-expanded`) != "true";
-                btn.setAttribute(`data-${CSS_PREFIX}-list-expanded`, expanded);
-                if (expanded) {
-                    macroContainer.lastElementChild.style.display = "block";
-                    macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, 0);
-                    focusMacroItem(macroContainer);
-                    let previewBtn = section.querySelector(`.${CSS_PREFIX}-preview-btn[data-${CSS_PREFIX}-is-previewing="true"]`);
-                    if (previewBtn) {
-                        previewBtn.click();
-                    }
-                } else {
-                    macroContainer.lastElementChild.style.display = "none";
-                }
-            });
-            macroContainer.appendChild(btn);
-
-            let macroList = document.createElement("ul");
-            macroList.classList.add(`${CSS_PREFIX}-macro-list`, "h-card");
-            macroList.style.display = "none";
-            for (const macro of MACROS) {
-                let li = document.createElement("li");
-                li.innerHTML = `
+                let macroList = document.createElement("ul");
+                macroList.classList.add(`${CSS_PREFIX}-macro-list`, "h-card", "dropdown-menu");
+                macroList.style.display = "none";
+                for (const macro of MACROS) {
+                    let li = document.createElement("li");
+                    li.innerHTML = `
                     <div class="sn-card-component_accent-bar"></div>
                     <strong>${escapeHTML(macro.name).replace(/(\.|_)/g, "$1<wbr>") || "<i>[Empty Name]</i>"}</strong>
                     ${typeof macro.description == "string" ?
-                        `<small>${macro.description || '""'}</small>` :
-                        `<small class="${CSS_PREFIX}-desc-flex">"<span>${macro.description[1]}</span>"</small>`
-                    }
+                            `<small>${macro.description || '""'}</small>` :
+                            `<small class="${CSS_PREFIX}-desc-flex">"<span>${macro.description[1]}</span>"</small>`
+                        }
                 `;
-                li.setAttribute(`data-${CSS_PREFIX}-macro-name`, macro.name);
-                li.tabIndex = 0;
-                li.role = "button";
+                    li.setAttribute(`data-${CSS_PREFIX}-macro-name`, macro.name);
+                    li.tabIndex = 0;
+                    li.role = "button";
 
-                li.addEventListener("click", selectMacroItem);
-                li.addEventListener("keydown", function (e) {
-                    if (e.code == "Enter" || e.code == " ") selectMacroItem(e);
-                });
-                li.addEventListener("mouseenter", function (e) {
-                    li.setAttribute(`data-${CSS_PREFIX}-hovering`, "true");
-                    li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
-                });
-                li.addEventListener("mouseleave", function (e) {
-                    li.setAttribute(`data-${CSS_PREFIX}-hovering`, "false");
-                    if (li.getAttribute(`data-${CSS_PREFIX}-focusing`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
-                        li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
-                    }
-                });
-                li.addEventListener("focus", function (e) {
-                    li.setAttribute(`data-${CSS_PREFIX}-focusing`, "true");
-                    li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
-                    macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, Array.prototype.indexOf.call(li.parentNode.children, li));
-                    focusMacroItem(macroContainer);
-                });
-                li.addEventListener("blur", function (e) {
-                    li.setAttribute(`data-${CSS_PREFIX}-focusing`, "false");
-                    if (li.getAttribute(`data-${CSS_PREFIX}-hovering`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
-                        li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
-                    }
-                });
-                macroList.appendChild(li);
+                    li.addEventListener("click", selectMacroItem);
+                    li.addEventListener("keydown", function (e) {
+                        if (e.code == "Enter" || e.code == " ") selectMacroItem(e);
+                    });
+                    li.addEventListener("mouseenter", function (e) {
+                        li.setAttribute(`data-${CSS_PREFIX}-hovering`, "true");
+                        li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
+                    });
+                    li.addEventListener("mouseleave", function (e) {
+                        li.setAttribute(`data-${CSS_PREFIX}-hovering`, "false");
+                        if (li.getAttribute(`data-${CSS_PREFIX}-focusing`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
+                            li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
+                        }
+                    });
+                    li.addEventListener("focus", function (e) {
+                        li.setAttribute(`data-${CSS_PREFIX}-focusing`, "true");
+                        li.firstElementChild.classList.add("sn-card-component_accent-bar_dark");
+                        macroContainer.setAttribute(`data-${CSS_PREFIX}-focused-index`, Array.prototype.indexOf.call(li.parentNode.children, li));
+                        focusMacroItem(macroContainer);
+                    });
+                    li.addEventListener("blur", function (e) {
+                        li.setAttribute(`data-${CSS_PREFIX}-focusing`, "false");
+                        if (li.getAttribute(`data-${CSS_PREFIX}-hovering`) != "true" && li.getAttribute(`data-${CSS_PREFIX}-artificial-focusing`) != "true") {
+                            li.firstElementChild.classList.remove("sn-card-component_accent-bar_dark");
+                        }
+                    });
+                    macroList.appendChild(li);
+                }
+                macroContainer.appendChild(macroList);
+
+                section.insertBefore(macroContainer, section.firstElementChild);
             }
-            macroContainer.appendChild(macroList);
-
-            section.insertBefore(macroContainer, section.firstElementChild);
         }
 
         pullRightSections = document.querySelectorAll(`.sn-controls.row .pull-right:not([data-${CSS_PREFIX}-preview-btn-inserted])`);
-        for (const section of pullRightSections) {
-            section.setAttribute(`data-${CSS_PREFIX}-preview-btn-inserted`, "true");
+        if (DO_MARKDOWN) {
+            for (const section of pullRightSections) {
+                section.setAttribute(`data-${CSS_PREFIX}-preview-btn-inserted`, "true");
 
-            let postBtn = section.querySelector(".activity-submit");
-            if (!postBtn) {
-                continue;
-            }
-
-            // Make a copy of the Post button so that we can parse the markdown first, and then push
-            // the actual post button ourself.
-            let prePostBtn = document.createElement("button");
-            prePostBtn.classList.add(`${CSS_PREFIX}-prepost-btn`, "btn", "btn-default");
-            prePostBtn.innerText = postBtn.innerText
-            prePostBtn.addEventListener("click", function (e) {
-                e.preventDefault();
-                // Get the visible textareas.
-                let textareas = [
-                    document.getElementById("activity-stream-textarea"),
-                    document.getElementById("activity-stream-comments-textarea"),
-                    document.getElementById("activity-stream-work_notes-textarea")
-                ];
-
-                // Go through each textarea and replace its contents with the markdown-parsed
-                // version, but only if the textarea is visible (by checking. offsetParent), and if
-                // the markdown-parsed text is any different from the textarea's actual text.
-                let hasChangedValue = false;
-                for (const textarea of textareas) {
-                    if (!textarea || !textarea.offsetParent) continue;
-                    let parsedText = parseMarkdownText(textarea.value);
-                    if (textarea.value != parsedText) {
-                        setTextareaValue(textareaDatas.get(textarea), parsedText, false);
-                        hasChangedValue = true;
-                    }
+                let postBtn = section.querySelector(".activity-submit");
+                if (!postBtn) {
+                    continue;
                 }
 
-                // Wait a little bit of time before clicking the post button to ensure the textarea
-                // has had enough time to update.
-                setTimeout(function () {
-                    postBtn.click();
-                    let previewBtn = section.querySelector(`.${CSS_PREFIX}-preview-btn[data-${CSS_PREFIX}-is-previewing="true"]`);
-                    if (previewBtn) {
-                        previewBtn.click();
+                // Make a copy of the Post button so that we can parse the markdown first, and then push
+                // the actual post button ourself.
+                let prePostBtn = document.createElement("button");
+                prePostBtn.classList.add(`${CSS_PREFIX}-prepost-btn`, "btn", "btn-default");
+                prePostBtn.innerText = postBtn.innerText
+                prePostBtn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    // Get the visible textareas.
+                    let textareas = [
+                        document.getElementById("activity-stream-textarea"),
+                        document.getElementById("activity-stream-comments-textarea"),
+                        document.getElementById("activity-stream-work_notes-textarea")
+                    ];
+
+                    // Go through each textarea and replace its contents with the markdown-parsed
+                    // version, but only if the textarea is visible (by checking. offsetParent), and if
+                    // the markdown-parsed text is any different from the textarea's actual text.
+                    let hasChangedValue = false;
+                    for (const textarea of textareas) {
+                        if (!textarea || !textarea.offsetParent) continue;
+                        let parsedText = parseMarkdownText(textarea.value);
+                        if (textarea.value != parsedText) {
+                            setTextareaValue(textareaDatas.get(textarea), parsedText, false);
+                            hasChangedValue = true;
+                        }
                     }
-                }, hasChangedValue ? SUBMIT_DELAY : 0);
-            });
 
-            // Make a Preview button to toggle previewing a textarea's markdown.
-            let previewBtn = document.createElement("button");
-            previewBtn.classList.add(`${CSS_PREFIX}-preview-btn`, "btn", "btn-default");
-            previewBtn.innerText = "Preview";
-            previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, "false");
-            previewBtn.addEventListener("click", function (e) {
-                e.preventDefault();
-                let previewing = previewBtn.getAttribute(`data-${CSS_PREFIX}-is-previewing`) != "true";
-                previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, previewing);
-                // Get the visible textareas.
-                let textareas = [
-                    document.getElementById("activity-stream-textarea"),
-                    document.getElementById("activity-stream-comments-textarea"),
-                    document.getElementById("activity-stream-work_notes-textarea")
-                ];
+                    // Wait a little bit of time before clicking the post button to ensure the textarea
+                    // has had enough time to update.
+                    setTimeout(function () {
+                        postBtn.click();
+                        let previewBtn = section.querySelector(`.${CSS_PREFIX}-preview-btn[data-${CSS_PREFIX}-is-previewing="true"]`);
+                        if (previewBtn) {
+                            previewBtn.click();
+                        }
+                    }, hasChangedValue ? SUBMIT_DELAY : 0);
+                });
 
-                // For each of the textareas, show its Markdown previewer div.
-                for (const textarea of textareas) {
-                    if (!textarea) continue;
-                    let textareaData = textareaDatas.get(textarea);
+                // Make a Preview button to toggle previewing a textarea's markdown.
+                let previewBtn = document.createElement("button");
+                previewBtn.classList.add(`${CSS_PREFIX}-preview-btn`, "btn", "btn-default");
+                previewBtn.innerText = "Preview";
+                previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, "false");
+                previewBtn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    let previewing = previewBtn.getAttribute(`data-${CSS_PREFIX}-is-previewing`) != "true";
+                    previewBtn.setAttribute(`data-${CSS_PREFIX}-is-previewing`, previewing);
+                    // Get the visible textareas.
+                    let textareas = [
+                        document.getElementById("activity-stream-textarea"),
+                        document.getElementById("activity-stream-comments-textarea"),
+                        document.getElementById("activity-stream-work_notes-textarea")
+                    ];
 
-                    // Parse the textarea's value as Markdown to turn it into HTML.
-                    let parsed = parseMarkdownText(textarea.value);
-                    // Now we have to sanitize all the text outside of [code][/code] blocks, while
-                    // leaving text inside [code][/code] blocks as-is.
+                    // For each of the textareas, show its Markdown previewer div.
+                    for (const textarea of textareas) {
+                        if (!textarea) continue;
+                        let textareaData = textareaDatas.get(textarea);
 
-                    if (previewing) {
-                        // Most of the code below is taken directly from parseMarkdownText().
-                        let escaped = "";
-                        let startIndex;
-                        while (~(startIndex = parsed.indexOf("[code]"))) {
-                            escaped += escapeHTML(parsed.substring(0, startIndex));
-                            parsed = parsed.substring(startIndex + 6);
+                        // Parse the textarea's value as Markdown to turn it into HTML.
+                        let parsed = parseMarkdownText(textarea.value);
+                        // Now we have to sanitize all the text outside of [code][/code] blocks, while
+                        // leaving text inside [code][/code] blocks as-is.
 
-                            let codeInstances = 1;
-                            while (codeInstances) {
-                                let startIndex = parsed.indexOf("[code]");
-                                let endIndex = parsed.indexOf("[/code]");
+                        if (previewing) {
+                            // Most of the code below is taken directly from parseMarkdownText().
+                            let escaped = "";
+                            let startIndex;
+                            while (~(startIndex = parsed.indexOf("[code]"))) {
+                                escaped += escapeHTML(parsed.substring(0, startIndex));
+                                parsed = parsed.substring(startIndex + 6);
 
-                                if (!~endIndex) {
-                                    parsed += "[/code]";
-                                    continue;
-                                }
+                                let codeInstances = 1;
+                                while (codeInstances) {
+                                    let startIndex = parsed.indexOf("[code]");
+                                    let endIndex = parsed.indexOf("[/code]");
 
-                                if (~startIndex && startIndex < endIndex) {
-                                    escaped += parsed.substring(0, startIndex);
-                                    parsed = parsed.substring(startIndex + 6);
-                                    codeInstances++;
-                                } else {
-                                    escaped += parsed.substring(0, endIndex);
-                                    parsed = parsed.substring(endIndex + 7);
-                                    codeInstances--;
+                                    if (!~endIndex) {
+                                        parsed += "[/code]";
+                                        continue;
+                                    }
+
+                                    if (~startIndex && startIndex < endIndex) {
+                                        escaped += parsed.substring(0, startIndex);
+                                        parsed = parsed.substring(startIndex + 6);
+                                        codeInstances++;
+                                    } else {
+                                        escaped += parsed.substring(0, endIndex);
+                                        parsed = parsed.substring(endIndex + 7);
+                                        codeInstances--;
+                                    }
                                 }
                             }
+                            escaped += escapeHTML(parsed);
+
+                            textareaData.markdownPreviewerRoot.innerHTML = escaped;
+                            textareaData.markdownPreviewer.style.display = "block";
+                            textarea.tabIndex = -1;
+                            replaceSmartText(textareaData.markdownPreviewerRoot);
+
+                            textareaData.oldHeight = textareaData.element.style.height;
+                            textareaData.element.style.height = textareaData.markdownPreviewerRoot.scrollHeight + "px";
+                            textareaData.element.style.maxHeight = "initial";
+                        } else {
+                            textareaData.markdownPreviewer.style.display = "none";
+                            // For whatever reason, ServiceNow seems to have a bug where a textarea with
+                            // tabindex=0 does not allow you to push Enter (???). The cursor just does
+                            // not move to a new line when you push Enter, and I don't know why. Instead
+                            // of explicitly setting the tabindex to 0, we just remove the tabindex
+                            // attribute off the element altogether so that it implicitly goes back to
+                            // 0.
+                            textarea.removeAttribute("tabindex");
+
+                            textareaData.element.style.height = textareaData.oldHeight;
+                            textareaData.element.style.maxHeight = "initial";
+                            textareaData.oldHeight = null;
                         }
-                        escaped += escapeHTML(parsed);
 
-                        textareaData.markdownPreviewerRoot.innerHTML = escaped;
-                        textareaData.markdownPreviewer.style.display = "block";
-                        textarea.tabIndex = -1;
-                        replaceSmartText(textareaData.markdownPreviewerRoot);
-
-                        textareaData.oldHeight = textareaData.element.style.height;
-                        textareaData.element.style.height = textareaData.markdownPreviewerRoot.scrollHeight + "px";
-                        textareaData.element.style.maxHeight = "initial";
-                    } else {
-                        textareaData.markdownPreviewer.style.display = "none";
-                        // For whatever reason, ServiceNow seems to have a bug where a textarea with
-                        // tabindex=0 does not allow you to push Enter (???). The cursor just does
-                        // not move to a new line when you push Enter, and I don't know why. Instead
-                        // of explicitly setting the tabindex to 0, we just remove the tabindex
-                        // attribute off the element altogether so that it implicitly goes back to
-                        // 0.
-                        textarea.removeAttribute("tabindex");
-
-                        textareaData.element.style.height = textareaData.oldHeight;
-                        textareaData.element.style.maxHeight = "initial";
-                        textareaData.oldHeight = null;
+                        textarea.blur();
                     }
+                });
 
-                    textarea.blur();
-                }
+                // Hide the post button away from view and make it un-clickable so that only we can
+                // click it.
+                postBtn.style.position = "absolute";
+                postBtn.style.opacity = 0;
+                postBtn.style.pointerEvents = "none";
 
-
-            });
-
-            // Hide the post button away from view and make it un-clickable so that only we can
-            // click it.
-            postBtn.style.position = "absolute";
-            postBtn.style.opacity = 0;
-            postBtn.style.pointerEvents = "none";
-
-            section.insertBefore(prePostBtn, postBtn);
-            section.insertBefore(previewBtn, prePostBtn);
+                section.insertBefore(prePostBtn, postBtn);
+                section.insertBefore(previewBtn, prePostBtn);
+            }
         }
 
         let comments = document.querySelectorAll(`.sn-widget-textblock-body:not([data-${CSS_PREFIX}-smart-text-searched]),.sn-widget-list-table-cell:not([data-${CSS_PREFIX}-smart-text-searched]),sn-html-content-wrapper:not([data-${CSS_PREFIX}-smart-text-searched])`);
-        for (const comment of comments) {
-            comment.setAttribute(`data-${CSS_PREFIX}-smart-text-searched`, "true");
+        if (DO_SMART_TEXT) {
+            for (const comment of comments) {
+                comment.setAttribute(`data-${CSS_PREFIX}-smart-text-searched`, "true");
 
-            for (let node = comment; node; node = node.parentElement) {
-                node.style.overflow = "visible";
-                if (node.nodeName == "LI") {
-                    node.style.display = "inline-block";
-                    node.style.width = "100%";
-                } else if (node.classList.contains("h-card-wrapper") && node.classList.contains("activities-form")) {
-                    break;
+                for (let node = comment; node; node = node.parentElement) {
+                    node.style.overflow = "visible";
+                    if (node.nodeName == "LI") {
+                        node.style.display = "inline-block";
+                        node.style.width = "100%";
+                    } else if (node.classList.contains("h-card-wrapper") && node.classList.contains("activities-form")) {
+                        break;
+                    }
                 }
-            }
 
-            if (comment.shadowRoot) {
-                const stylesheet = document.createElement("style");
-                stylesheet.innerHTML = MAC_ADDRESS_SPAN_STYLES;
-                comment.shadowRoot.insertBefore(stylesheet, comment.shadowRoot.firstChild);
-                replaceSmartText(comment.shadowRoot);
-            } else {
-                replaceSmartText(comment);
+                if (comment.shadowRoot) {
+                    const stylesheet = document.createElement("style");
+                    stylesheet.innerHTML = MAC_ADDRESS_SPAN_STYLES;
+                    comment.shadowRoot.insertBefore(stylesheet, comment.shadowRoot.firstChild);
+                    replaceSmartText(comment.shadowRoot);
+                } else {
+                    replaceSmartText(comment);
+                }
             }
         }
 
         let saveBtn = document.querySelector(`#sysverb_update_and_stay:not([data-${CSS_PREFIX}-save-btn-inserted])`);
-        if (saveBtn) {
+        if (DO_MARKDOWN && saveBtn) {
             saveBtn.setAttribute(`data-${CSS_PREFIX}-save-btn-inserted`, "true");
             let preSaveBtn = document.createElement("button");
             preSaveBtn.classList.add(`${CSS_PREFIX}-presave-btn`, "btn", "btn-default", "action_context");
@@ -2595,8 +2754,9 @@
             saveBtn.style.pointerEvents = "none";
             saveBtn.parentNode.insertBefore(preSaveBtn, saveBtn);
         }
+
         let saveExitBtn = document.querySelector(`#sysverb_update:not([data-${CSS_PREFIX}-save-exit-btn-inserted])`);
-        if (saveExitBtn) {
+        if (DO_MARKDOWN && saveExitBtn) {
             saveExitBtn.setAttribute(`data-${CSS_PREFIX}-save-exit-btn-inserted`, "true");
             let preSaveExitBtn = document.createElement("button");
             preSaveExitBtn.classList.add(`${CSS_PREFIX}-presave-exit-btn`, "btn", "btn-default", "action_context");
@@ -2629,6 +2789,29 @@
             saveExitBtn.style.pointerEvents = "none";
             saveExitBtn.parentNode.insertBefore(preSaveExitBtn, saveExitBtn);
         }
+
+        let templateBar = document.querySelector(`#template-bar-aria-container:not([data-${CSS_PREFIX}-template-bar-handler-added])`);
+        if (false && templateBar) {
+            templateBar.setAttribute(`data-${CSS_PREFIX}-template-bar-handler-added`, "true");
+            templateBar.addEventListener("click", function () {
+                const previousTextareaValues = new Map();
+                for (const [textarea, textareaData] of textareaDatas) {
+                    previousTextareaValues.set(textarea, textarea.value);
+                    console.log(textarea)
+                    console.log(textarea.value)
+                }
+
+                setTimeout(function () {
+                    for (const [textarea, textareaData] of textareaDatas) {
+                        console.log(textarea)
+                        console.log(textarea.value)
+                        if (textarea.value != previousTextareaValues.get(textarea) && !textareaData.suppressInputs) {
+                            checkReplacements(textareaData);
+                        }
+                    }
+                }, 5000);
+            });
+        }
     }
     f();
     new MutationObserver(f).observe(document, {
@@ -2646,7 +2829,7 @@
             overflow-y: auto !important;
             position: absolute !important;
             max-height: 120px;
-            width: 200px;
+            width: 220px;
             box-sizing: border-box;
             z-index: 3;
         }
@@ -2709,6 +2892,8 @@
 
         .${CSS_PREFIX}-macro-list {
             right: 0;
+            top: initial;
+            left: initial;
             width: 300px !important;
             max-height: 180px;
         }
@@ -2735,6 +2920,32 @@
 
         :root[data-${CSS_PREFIX}-left-align-tooltip="true"] .tooltip-inner {
             text-align: left;
+        }
+
+        .${CSS_PREFIX}-tab-indicator {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            padding: .2em .4em !important;
+            width: initial;
+            height: initial !important;
+            min-height: initial !important;
+            border-top-width: 0;
+            border-right-width: 0;
+            border-top-left-radius: 0;
+            border-bottom-right-radius: 0;
+            font-size: 13px !important;
+        }
+
+        .${CSS_PREFIX}-tab-indicator button {
+            height: 18px;
+            width: 18px;
+            padding: 0;
+            margin-right: .444em;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 90%;
         }
 
         ${MAC_ADDRESS_SPAN_STYLES}
