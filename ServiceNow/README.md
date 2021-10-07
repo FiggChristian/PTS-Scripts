@@ -68,7 +68,7 @@ Zendesk doesn't have this built in, but I think it's helpful enough to add since
 
 Here are all three in action:
 
-![Smart Text Demo](https://github.com/FiggChristian/PTS-Scripts/blob/main/.github/assets/Smart%20Text%20Demo.mp4?raw=true)
+![Smart Text Demo](https://github.com/FiggChristian/PTS-Scripts/blob/main/.github/assets/Smart%20Text%20Demo.mov?raw=true)
 
 ## How To Get It
 
