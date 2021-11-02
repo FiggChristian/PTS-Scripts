@@ -1,0 +1,35 @@
+{
+  "name": "service-now-pts-scripts",
+  "version": "2.0.0",
+  "description": "A script that adds some enhancements to ServiceNow for PTS team members.",
+  "main": "service-now.user.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "npx browserify service-now.user.js -o service-now.compiled.user.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FiggChristian/PTS-Scripts.git"
+  },
+  "author": "Christian Figueroa <figgchristian@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FiggChristian/PTS-Scripts/issues"
+  },
+  "homepage": "https://github.com/FiggChristian/PTS-Scripts#readme",
+  "devDependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "browserify": "^17.0.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-streamify": "^1.0.2",
+    "gulp-uglify": "^3.0.2",
+    "map-stream": "^0.0.7",
+    "marked": "^3.0.7",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "presets": [
+    "@babel/preset-env"
+  ]
+}
