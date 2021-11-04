@@ -1,5 +1,5 @@
 const { CSS_PREFIX, REPLACEMENT_START_DELIMITER, REPLACEMENT_END_DELIMITER, CURSOR } = require("./constants.js");
-const { escapeHTML, replaceTextareaValue, dedent, setAssignmentGroup } = require("./helpers.js");
+const { escapeHTML, replaceTextareaValue, dedent, setAssignmentGroup, setState } = require("./helpers.js");
 const { resolveReplacements } = require("./replacements.js");
 const { textareaData } = require("./textareas.js");
 const { addToSubBar } = require("./textarea_subbar.js");
@@ -10,6 +10,13 @@ const TEAM = {
     ESCALATION: 0b010,
     RESOLUTION: 0b100
 }
+
+const STATE = {
+    NEW: Symbol.for("STATE.NEW"),
+    ACTIVE: Symbol.for("STATE.ACTIVE"),
+    PENDING: Symbol.for("STATE.PENDING"),
+    RESOLVED: Symbol.for("STATE.RESOLVED")
+};
 
 const MACROS = [
     {
@@ -25,7 +32,8 @@ const MACROS = [
                 
                 Best,
                 ${REPLACEMENT_START_DELIMITER}current_user.name.full${REPLACEMENT_END_DELIMITER}
-            `
+            `,
+            state: STATE.PENDING
         },
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     },
@@ -48,7 +56,8 @@ const MACROS = [
                 Specific issue details: ${CURSOR()}
                 Troubleshooting attempted thus far: ${CURSOR()}
             `,
-            assignment_group: "UIT ResNet"
+            assignment_group: "UIT ResNet",
+            state: STATE.ACTIVE
         },
         ticket_team: TEAM.ESCALATION
     },
@@ -77,7 +86,8 @@ const MACROS = [
                 NetDB date registered: ${CURSOR()}
                 DHCPlog recent history: ${CURSOR()}
             `,
-            assignment_group: "UIT IT Operations Center"
+            assignment_group: "UIT IT Operations Center",
+            state: STATE.ACTIVE
         },
         ticket_team: TEAM.ESCALATION
     },
@@ -98,7 +108,8 @@ const MACROS = [
 
                 Best,
                 ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
-            `
+            `,
+            state: STATE.PENDING
         },
         ticket_team: TEAM.ESCALATION
     },
@@ -121,7 +132,25 @@ const MACROS = [
 
                 Best,
                 ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
-            `
+            `,
+            state: STATE.PENDING
+        },
+        ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
+    },
+    {
+        name: "Send Resolved Ticket to Resolution",
+        description: "Sends a closing comment to the customer and sends ticket to Resolution.",
+        fields: {
+            additional_comments: `
+                Hi ${REPLACEMENT_START_DELIMITER}ticket.requester.name.first${REPLACEMENT_END_DELIMITER},
+                
+                Thank you for letting us know your issue has been resolved. Feel free to reach out again if you run into any issues in the future!
+
+                Best,
+                ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
+            `,
+            assignment_group: "VPSA LTS Student Technology Services Resolution",
+            state: STATE.ACTIVE
         },
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     },
@@ -149,7 +178,8 @@ const MACROS = [
                 
                 Best,
                 ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
-            `
+            `,
+            state: STATE.PENDING
         },
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     },
@@ -178,7 +208,8 @@ const MACROS = [
                 
                 Best,
                 ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
-            `
+            `,
+            state: STATE.PENDING
         },
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     },
@@ -193,16 +224,20 @@ const MACROS = [
                 
                 Best,
                 ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
-            `
+            `,
+            state: STATE.PENDING
         },
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     },
     {
-        name: "Resolve Stale Ticket",
-        description: "Sends an old ticket ot resolution if there's no follow up.",
+        name: "Close Stale Ticket",
+        description: "Sends an old ticket to resolution if the customer hasn't replied in a while.",
         fields: {
-            work_notes: `No follow up after checking in.`,
-            assignment_group: "VPSA LTS Student Technology Services Resolution"
+            work_notes: `
+                No follow up after a while. Sending to resolution.
+            `,
+            assignment_group: "VPSA LTS Student Technology Services Resolution",
+            state: STATE.ACTIVE
         },
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     },
@@ -226,7 +261,8 @@ const MACROS = [
                 
                 Best,
                 ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
-            `
+            `,
+            state: STATE.PENDING
         },
         ticket_team: TEAM.TRIAGE
     },
@@ -248,7 +284,8 @@ const MACROS = [
                 
                 Best,
                 ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
-            `
+            `,
+            state: STATE.PENDING
         },
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     }
@@ -582,56 +619,100 @@ module.exports.init = function() {
                 const fieldName = ({
                     additional_comments: "Additional Comments (Customer Visible)",
                     work_notes: "Work Notes",
-                    assignment_group: "Assignment Group"
+                    assignment_group: "Assignment Group",
+                    state: "State"
                 })[field] || null;
 
                 if (fieldName === null) {
                     continue;
                 }
 
-                // Get the value that would be replaced.
-                let value = macro.fields[field];
-                if (typeof value == "function") {
-                    value = value();
-                    if (value === null) {
+                let fieldValue = null;
+
+                if (fieldName == "State") {
+                    // If we are changing the state of the ticket, the associated value is a Symbol
+                    // that we have to translate into a string.
+                    const elements = [
+                        document.getElementById("incident.state"),
+                        document.getElementById("ticket.state"),
+                        document.getElementById("sc_task.state")
+                    ].filter(elem => elem);
+
+                    if (elements.length != 1) {
                         continue;
+                    }
+                    const options = elements[0].children;
+
+                    const translatedStates = {
+                        [Symbol.for("STATE.NEW")]: ["New", "Open"],
+                        [Symbol.for("STATE.ACTIVE")]: ["Active", "Open"],
+                        [Symbol.for("STATE.PENDING")]: ["Awaiting User Info", "Hold - Awaiting user information", "Pending"],
+                        [Symbol.for("STATE.RESOLVED")]: ["Resolved", "Closed Complete"]
+                    }[macro.fields[field]] || [];
+
+                    let newState = null;
+                    for (const state of translatedStates) {
+                        for (const option of options) {
+                            if (option.innerText == state) {
+                                newState = option.innerText;
+                                break;
+                            }
+                        }
+                        if (newState) break;
+                    }
+
+                    if (!newState) {
+                        continue;
+                    }
+
+                    fieldValue = newState;
+                } else {
+                    // Get the value that would be replaced.
+                    let value = macro.fields[field];
+                    if (typeof value == "function") {
+                        value = value();
+                        if (value === null) {
+                            continue;
+                        } else {
+                            value = dedent(value + "");
+                        }
                     } else {
                         value = dedent(value + "");
                     }
-                } else {
-                    value = dedent(value + "");
-                }
 
-                // Resolve any replacements
-                let [replacedValue, caretPositions] = resolveReplacements(value, value.length);
+                    // Resolve any replacements
+                    let [replacedValue, caretPositions] = resolveReplacements(value, value.length);
 
-                // If there's only one caret position, and it's at the end, we don't want to show it
-                // since that's not significant.
-                if (caretPositions.length == 1 && caretPositions[0][0] == caretPositions[0][1] & caretPositions[0][0] == replacedValue.length) {
-                    caretPositions = [];
-                } else {
-                    // Replace any caret positions with a special <span> that will show caret positions.
-                    // Also escape any HTML in between these <span>s.
-                    for (let i = caretPositions.length - 1; i >= 0; i--) {
-                        replacedValue =
-                            replacedValue.substring(0, caretPositions[i][0]) +
-                            `<span class="${CSS_PREFIX}-caret-position-span ${CSS_PREFIX}-span-${caretPositions[i][0] == caretPositions[i][1] ? "empty" : "full"}"><span></span><span></span><span>` +
-                            escapeHTML(replacedValue.substring(caretPositions[i][0], caretPositions[i][1])) +
-                            "</span></span>" +
-                            escapeHTML(replacedValue.substring(caretPositions[i][1], i == caretPositions.length - 1 ? replacedValue.length : caretPositions[i + 1][0])) +
-                            replacedValue.substring(i == caretPositions.length - 1 ? replacedValue.length : caretPositions[i + 1][0]);
+                    // If there's only one caret position, and it's at the end, we don't want to show it
+                    // since that's not significant.
+                    if (caretPositions.length == 1 && caretPositions[0][0] == caretPositions[0][1] & caretPositions[0][0] == replacedValue.length) {
+                        caretPositions = [];
+                    } else {
+                        // Replace any caret positions with a special <span> that will show caret positions.
+                        // Also escape any HTML in between these <span>s.
+                        for (let i = caretPositions.length - 1; i >= 0; i--) {
+                            replacedValue =
+                                replacedValue.substring(0, caretPositions[i][0]) +
+                                `<span class="${CSS_PREFIX}-caret-position-span ${CSS_PREFIX}-span-${caretPositions[i][0] == caretPositions[i][1] ? "empty" : "full"}"><span></span><span></span><span>` +
+                                escapeHTML(replacedValue.substring(caretPositions[i][0], caretPositions[i][1])) +
+                                "</span></span>" +
+                                escapeHTML(replacedValue.substring(caretPositions[i][1], i == caretPositions.length - 1 ? replacedValue.length : caretPositions[i + 1][0])) +
+                                replacedValue.substring(i == caretPositions.length - 1 ? replacedValue.length : caretPositions[i + 1][0]);
+                        }
+                        replacedValue = escapeHTML(replacedValue.substring(0, caretPositions[0][0])) + replacedValue.substring(caretPositions[0][0]);
                     }
-                    replacedValue = escapeHTML(replacedValue.substring(0, caretPositions[0][0])) + replacedValue.substring(caretPositions[0][0]);
+
+                    fieldValue = replacedValue;
                 }
 
                 // Now make the element that will display this field value.
                 const container = document.createElement("div");
                 container.classList.add(`${CSS_PREFIX}-preview-field-container`);
                 container.innerHTML = `
-                    <div>${fieldName}</div>
-                    <div class="${CSS_PREFIX}-preview-field-value ${field == "work_notes" ? `${CSS_PREFIX}-preview-work_notes-value` : ""} form-control">${replacedValue}</div>
-                `;
-                fieldsContainer.appendChild(container)
+                        <div>${fieldName}</div>
+                        <div class="${CSS_PREFIX}-preview-field-value ${field == "work_notes" ? `${CSS_PREFIX}-preview-work_notes-value` : ""} form-control">${fieldValue}</div>
+                    `;
+                fieldsContainer.appendChild(container);
             }
 
             events.trigger("focus_macro_tab", macro, focused);
@@ -679,10 +760,10 @@ module.exports.init = function() {
                 }
                 value = dedent(returnValue + "");
             } else {
-                value = dedent(macro.fields[key] + "");
+                value = typeof macro.fields[key] == "symbol" ? macro.fields[key] : dedent(macro.fields[key] + "");
             }
 
-            const [replacedValue, caretPositions] = resolveReplacements(value, value.length);
+            const [replacedValue, caretPositions] = typeof value == "symbol" ? [value, null] : resolveReplacements(value, value.length);
 
             if (key == "additional_comments") {
                 const elements = [
@@ -747,6 +828,22 @@ module.exports.init = function() {
                     }
 
                     setAssignmentGroup(element, replacedValue);
+                }
+            } else if (key == "state") {
+                // Here, we do the same as for above, but instead of textareas, it'll be inputs. We
+                // don't care about caret positions here, just replacing the value.
+                const elements = [
+                    document.getElementById("incident.state"),
+                    document.getElementById("ticket.state"),
+                    document.getElementById("sc_task.state")
+                ];
+
+                for (const element of elements) {
+                    if (!element) {
+                        continue;
+                    }
+
+                    setState(element, value);
                 }
             }
         }

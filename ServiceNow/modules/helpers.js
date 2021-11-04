@@ -313,6 +313,35 @@ function setAssignmentGroup(element, value) {
     }
 }
 
+function setState(element, value) {
+    const options = element.children;
+
+    const translatedStates = {
+        [Symbol.for("STATE.NEW")]: ["New", "Open"],
+        [Symbol.for("STATE.ACTIVE")]: ["Active", "Open"],
+        [Symbol.for("STATE.PENDING")]: ["Awaiting User Info", "Hold - Awaiting user information", "Pending"],
+        [Symbol.for("STATE.RESOLVED")]: ["Resolved", "Closed Complete"]
+    }[value] || [];
+
+    let newValue = null;
+    for (const state of translatedStates) {
+        for (const option of options) {
+            if (option.innerText == state) {
+                newValue = option.value;
+                break;
+            }
+        }
+        if (newValue) break;
+    }
+
+    if (!newValue) {
+        return;
+    }
+
+    element.value = newValue;
+    element.dispatchEvent(new Event("change"));
+}
+
 function replaceTextareaValue(data, value, carets) {
     data.element.focus();
     
@@ -399,4 +428,5 @@ module.exports.dedent = dedent;
 module.exports.escapeHTML = escapeHTML;
 module.exports.replaceTextareaValue = replaceTextareaValue;
 module.exports.setAssignmentGroup = setAssignmentGroup;
+module.exports.setState = setState;
 module.exports.turnNoIndexInto = turnNoIndexInto;
