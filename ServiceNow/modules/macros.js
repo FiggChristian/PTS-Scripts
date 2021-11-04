@@ -198,6 +198,15 @@ const MACROS = [
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     },
     {
+        name: "Resolve Stale Ticket",
+        description: "Sends an old ticket ot resolution if there's no follow up.",
+        fields: {
+            work_notes: `No follow up after checking in.`,
+            assignment_group: "VPSA LTS Student Technology Services Resolution"
+        },
+        ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
+    },
+    {
         name: "Upgrade to Windows 10 Education",
         description: "Gives the user step-by-step instructions for upgrading to Windows 10 Education.",
         fields: {

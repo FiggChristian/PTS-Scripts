@@ -1,6 +1,4 @@
-// Imported by user scripts @require.
-// const marked = require("marked");
-
+const marked = require("marked");
 const { CSS_PREFIX, SUBMIT_DELAY } = require("./constants.js");
 const { turnNoIndexInto, escapeHTML, waitForElements, replaceTextareaValue } = require("./helpers.js");
 const { addTextareaData, textareaData } = require("./textareas.js");
@@ -71,7 +69,7 @@ marked.use({
             return `[code]<a href="${href}"${title ? ` title="${title}"` : ""}>[/code]${text}[code]</a>[/code]`;
         },
         image: function (src, title, text) {
-            return `[code]<img style="max-width:100%" src="${src}"${text ? ` alt="${text}"` : ""}${title ? ` title="${title}"` : ""}/>[/code]`
+            return `[code]<img src="${src}"${text ? ` alt="${text}"` : ""}${title ? ` title="${title}"` : ""}/>[/code]`
         },
         text: function (text) {
             return text.replace(/\n/g, "[code]<br/>[/code]");
