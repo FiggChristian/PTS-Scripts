@@ -1,4 +1,4 @@
-const USERSCRIPT_FILE = "/Users/christianfigueroa/Library/Containers/com.userscripts.macos.Userscripts-Extension/Data/Documents/scripts/ServiceNow Improvements.test.js";
+const USERSCRIPT_FILE = "/Users/christianfigueroa/Library/Containers/com.userscripts.macos.Userscripts-Extension/Data/Documents/scripts/ServiceNow Improvements.js";
 const BUILD_FILE = "./service-now.user.js";
 const DEV_FILE = "./service-now.dev.user.js"
 

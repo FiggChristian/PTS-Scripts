@@ -5,12 +5,22 @@ const { textareaData } = require("./textareas.js");
 const { addToSubBar } = require("./textarea_subbar.js");
 const events = require("./events.js");
 
+/**
+ * The different teams a macro can apply to. They can be combined with the "|" binary OR operator.
+ * @readonly
+ * @enum {number}
+ */
 const TEAM = {
     TRIAGE: 0b001,
     ESCALATION: 0b010,
     RESOLUTION: 0b100
-}
+};
 
+/**
+ * The different states a ticket can be in.
+ * @readonly
+ * @enum {Symbol}
+ */
 const STATE = {
     NEW: Symbol.for("STATE.NEW"),
     ACTIVE: Symbol.for("STATE.ACTIVE"),
@@ -18,6 +28,20 @@ const STATE = {
     RESOLVED: Symbol.for("STATE.RESOLVED")
 };
 
+/**
+ * @typedef {object} Macro
+ * @property {string} name The name to show in the macro selector.
+ * @property {string} description The description to show underneath the name in the macro selector.
+ * @property {object} fields A set of fields to change on the ticket when the macro is applied.
+ * @property {string} fields.additional_comments Changes the Additional Comments (Customer Visible)
+ *      field.
+ * @property {string} fields.work_notes Changes the Work Notes field.
+ * @property {STATE} fields.state The state to change the ticket to.
+ * @property {TEAM} ticket_team The team(s) this macro applies to. Combine TEAMs using the "|" binary OR
+ *      operator.
+ */
+
+/** @type Array<Macro> */
 const MACROS = [
     {
         name: "Request MAC Address",
@@ -51,7 +75,7 @@ const MACROS = [
                 1st timestamp: ${CURSOR()}
                 2nd timestamp: ${CURSOR()}
                 3rd timestamp: ${CURSOR()}
-                Specific location of issue inside apartment: ${CURSOR()}
+                Building and room number: ${CURSOR()}
                 Nature of issue <!-- slow, trouble connecting, dropped sessions, poor coverage -->: ${CURSOR()}
                 Specific issue details: ${CURSOR()}
                 Troubleshooting attempted thus far: ${CURSOR()}
@@ -98,7 +122,7 @@ const MACROS = [
             additional_comments: `
                 Hello ${REPLACEMENT_START_DELIMITER}ticket.requester.name.first${REPLACEMENT_END_DELIMITER},
 
-                If you are still experiencing connection issues, could you please send us three times and dates of exactly when you’ve had trouble, each with a brief description of your activity at the time and how it behaved in a way that was less than desirable, as well as the MAC address of the device you were using? For example:
+                If you are still experiencing connection issues, could you please send us three times and dates of exactly when you’ve had trouble, each with a brief description of your activity at the time and how it behaved in a way that was less than desirable? For example:
                 
                 > ${REPLACEMENT_START_DELIMITER}info.current_date${REPLACEMENT_END_DELIMITER} at ${REPLACEMENT_START_DELIMITER}info.current_time${REPLACEMENT_END_DELIMITER} – Dropped a Zoom Meeting
 
@@ -122,9 +146,10 @@ const MACROS = [
 
                 Thank you for reporting your trouble with the wireless network connectivity on the Stanford campus. There are some easy steps to take that resolve wireless network issues for most registered devices on campus:
 
-                1. Forget/remove "Stanford Visitor" and "eduroam" wireless networks from your device. Connect only to the "Stanford" wireless network. You can find instructions for forgetting a Wi-Fi network here: [Mac](${REPLACEMENT_START_DELIMITER}link.forget_wifi.mac${REPLACEMENT_END_DELIMITER}) | [Windows](${REPLACEMENT_START_DELIMITER}link.forget_wifi.windows${REPLACEMENT_END_DELIMITER}) | [iOS](${REPLACEMENT_START_DELIMITER}link.forget_wifi.ios${REPLACEMENT_END_DELIMITER}) | [Android](${REPLACEMENT_START_DELIMITER}link.forget_wifi.android${REPLACEMENT_END_DELIMITER})
-                2. Toggle the Wi-Fi on your device off and back on again.
-                3. Completely power down and restart your computer or device.
+                1. Ensure you have the private address feature disabled on your device. You can find instructions for doing this here: ${REPLACEMENT_START_DELIMITER}link.disable_private_address${REPLACEMENT_END_DELIMITER}.
+                2. Forget/remove "Stanford Visitor" and "eduroam" wireless networks from your device. Connect only to the "Stanford" wireless network. You can find instructions for forgetting a Wi-Fi network here: [Mac](${REPLACEMENT_START_DELIMITER}link.forget_wifi.mac${REPLACEMENT_END_DELIMITER}) | [Windows](${REPLACEMENT_START_DELIMITER}link.forget_wifi.windows${REPLACEMENT_END_DELIMITER}) | [iOS](${REPLACEMENT_START_DELIMITER}link.forget_wifi.ios${REPLACEMENT_END_DELIMITER}) | [Android](${REPLACEMENT_START_DELIMITER}link.forget_wifi.android${REPLACEMENT_END_DELIMITER})
+                3. Toggle the Wi-Fi on your device off and back on again.
+                4. Completely power down and restart your computer or device.
 
                 In the event that these steps don't resolve your wireless trouble, please find your device's MAC address and send it to us so we may begin troubleshooting for you.  Please see the following resource for additional information about finding your MAC address: ${REPLACEMENT_START_DELIMITER}link.mac_address${REPLACEMENT_END_DELIMITER}
 
@@ -135,7 +160,7 @@ const MACROS = [
             `,
             state: STATE.PENDING
         },
-        ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
+        ticket_team: TEAM.TRIAGE
     },
     {
         name: "Send Resolved Ticket to Resolution",
@@ -181,7 +206,7 @@ const MACROS = [
             `,
             state: STATE.PENDING
         },
-        ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
+        ticket_team: TEAM.TRIAGE
     },
     {
         name: "Register Router",
@@ -214,8 +239,8 @@ const MACROS = [
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     },
     {
-        name: "Stale Ticket Check-In",
-        description: "Asks the user for an update on an old ticket.",
+        name: "Check In #1",
+        description: "Asks the user for an update after not answering.",
         fields: {
             additional_comments: `
                 Hi ${REPLACEMENT_START_DELIMITER}ticket.requester.name.first${REPLACEMENT_END_DELIMITER},
@@ -230,8 +255,24 @@ const MACROS = [
         ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
     },
     {
+        name: "Check In #2",
+        description: "Asks the user for an update again if they didn't answer Check In #1.",
+        fields: {
+            additional_comments: `
+                Hi ${REPLACEMENT_START_DELIMITER}ticket.requester.name.first${REPLACEMENT_END_DELIMITER},
+
+                This is our second attempt to reach out in regards to your issue. Please let us know if your issue has been resolved or if you're still experiencing problems. If so, we can continue to troubleshoot. Otherwise, we can go ahead and close this ticket for now.
+
+                Best,
+                ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
+            `,
+            state: STATE.PENDING
+        },
+        ticket_team: TEAM.TRIAGE | TEAM.ESCALATION
+    },
+    {
         name: "Close Stale Ticket",
-        description: "Sends an old ticket to resolution if the customer hasn't replied in a while.",
+        description: "Sends an old ticket to resolution if the user didn't answer Check In #1 and #2.",
         fields: {
             work_notes: `
                 No follow up after a while. Sending to resolution.
@@ -265,6 +306,24 @@ const MACROS = [
             state: STATE.PENDING
         },
         ticket_team: TEAM.TRIAGE
+    },
+    {
+        name: "Excessive DNS Check In",
+        description: "Asks the user about excessive DNS queries being generated by their devices.",
+        fields: {
+            additional_comments: `
+                Hi ${REPLACEMENT_START_DELIMITER}ticket.requester.name.first${REPLACEMENT_END_DELIMITER},
+
+                UIT has informed us that one of your devices ${CURSOR(`<!-- optionally provide more information like the MAC address here  -->`)} has been generating excessive DNS queries. Do you have any idea why that might be happening? This can usually be caused by doing something out of the ordinary like running a server on the computer, downloading a large data set, etc. Using your computer as normal for tasks like Zoom, browsing the internet, etc. generally shouldn't have any issues. If you are aware of your computer recently doing anything out of the ordinary, please let us know so we know that this was a one-time occurrence. Otherwise, we can go ahead and make a small change on our end to make sure this issue is resolved in the future (and this shouldn't have any noticeable effect on your computer), but we just wanted to reach out to let you know and inquire as to whether you know of why that might be happening before making that change. 
+
+                Please let us know if you have questions or issues. 
+
+                Best,
+                ${REPLACEMENT_START_DELIMITER}current_user.name.first${REPLACEMENT_END_DELIMITER}
+            `,
+            state: STATE.PENDING
+        },
+        ticket_team: TEAM.ESCALATION
     },
     {
         name: "2.4 GHz-Only Devices",
@@ -318,7 +377,7 @@ module.exports.init = function() {
     modalRoot.innerHTML = `
         <div class="modal-dialog modal-lg ng-scope compact">
             <div class="modal-content">
-                <div class="modal-body clearfix">
+                <div class="modal-body clearfix" style="min-height:50vmin">
                     <div class="tab-aside col-sm-8" id="${CSS_PREFIX}-macro-list-panel">
                         <header class="modal-header clearfix">Macros</header>
                         <div class="settings-tabs">

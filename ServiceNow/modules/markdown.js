@@ -177,12 +177,12 @@ marked.use({
             name: "formTable",
             level: "block",
             tokenizer: function(src, tokens) {
-                const cap = /^(?!\n)(?:.*?:.*?(?:\n.+)*?)(?:\n(?!  |\t).*?:.*?(?:\n.+)*?){2,}(?=$|\n$|\n\n)/.exec(src);
+                const cap = /^(?!\n)(?:.*?:\s.*?(?:\n.+)*?)(?:\n(?!  |\t).*?:\s.*?(?:\n.+)*?){2,}(?=$|\n$|\n\n)/.exec(src);
                 if (cap) {
                     const rows = [];
                     let newSrc = src.trimLeft();
                     while (newSrc) {
-                        const match = /^(?:.*?:.*?(?:\n.+)*?)(?=\n(?!  |\t).*?:.*?(?:\n.+)*?|\n\n|$)/.exec(newSrc);
+                        const match = /^(?:.*?:\s.*?(?:\n.+)*?)(?=\n(?!  |\t).*?:\s.*?(?:\n.+)*?|\n\n|$)/.exec(newSrc);
                         if (!match) break;
                         const row = match[0];
                         rows.push(row);
@@ -278,7 +278,7 @@ module.exports.init = function() {
     // and the ticket is saved as expected. Replacing the value with the Markdown escaped value
     // allows us to submit as normal, and have ServiceNow read the textarea as having Markdown.
     waitForElements(
-        `[id*=sysverb_update]:not([data-${CSS_PREFIX}-save-button-processed]),button.activity-submit:not([data-${CSS_PREFIX}-save-button-processed])`,
+        `[id*=sysverb_update]:not([data-${CSS_PREFIX}-save-button-processed]),button.activity-submit:not([data-${CSS_PREFIX}-save-button-processed]),button[data-action="save"]:not([data-${CSS_PREFIX}-save-button-processed])`,
         function(buttons) {
             for (const button of buttons) {
                 button.setAttribute(`data-${CSS_PREFIX}-save-button-processed`, "true");

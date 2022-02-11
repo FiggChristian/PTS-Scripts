@@ -405,6 +405,15 @@ const REPLACEMENTS = [
     },
     {
         triggers: [
+            "link.cardinal_key.ios",
+            "link.cardinal_key.iphone"
+        ],
+        value: `https://uit.stanford.edu/service/cardinalkey/install_ios`,
+        description: "Link to download Cardinal Key for iPhones/iPads",
+        autoFillerVisibility: true
+    },
+    {
+        triggers: [
             "link.ssrt"
         ],
         value: `https://uit.stanford.edu/software/ssrt`,
@@ -475,6 +484,17 @@ const REPLACEMENTS = [
         ],
         value: `https://stanford.service-now.com/student_services?id=kb_article&number=KB00018428`,
         description: "Link to instructions for forgetting Wi-Fi networks on Android phones",
+        autoFillerVisibility: true
+    },
+    {
+        triggers: [
+            "link.disable_private_address",
+            "link.disable_private_mac_address",
+            "link.disable_random_address",
+            "link.disable_random_mac_address"
+        ],
+        value: `https://stanford.service-now.com/student_services?id=kb_article&sys_id=6126c5ca1b067c5098a05425604bcbb6`,
+        description: "Link to instructions for disabling a randomized MAC address",
         autoFillerVisibility: true
     },
     {
