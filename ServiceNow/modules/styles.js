@@ -2,6 +2,12 @@ const { CSS_PREFIX } = require("./constants.js");
 const events = require("./events.js");
 
 module.exports.SMART_TEXT = `
+    .${CSS_PREFIX}-smart-text-icon {
+        height: 1em;
+        vertical-align: -.15em;
+        margin-right: .15em;
+    }
+
     .${CSS_PREFIX}-smart-text-span {
         padding: .5rem;
         margin: -.5rem;

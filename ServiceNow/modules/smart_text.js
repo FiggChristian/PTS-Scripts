@@ -129,21 +129,50 @@ function replaceSmartText(node) {
             }
 
             if (firstMatch == macAddressMatch) {
+                // Links sometimes ave random numbers in them that look like they could be a MAC
+                // address, but are usually just random numbers as part of the link. To prevent
+                // those from getting highlighted, we check if the parent of this text node is an
+                // "<A>" element, and if there is more text inside the text node other than just the
+                // MAC address numbers.
+
+                // Check if parent is <a>.
+                if (node.parentNode.nodeType == Node.ELEMENT_NODE && node.parentNode.nodeName == "A") {
+                    // Check if there's other text in the node.
+                    const beforeText = node.textContent.substring(0, macAddressMatch.index);
+                    const afterText = node.textContent.substring(macAddressMatch.index + macAddressMatch[0].length);
+                    if ((beforeText + afterText).trim()) {
+                        // Instead of replacing this with a smart-text node, we replace it with a
+                        // generic text node and move on to the next text node.
+                        node.parentNode.insertBefore(document.createTextNode(beforeText), node);
+                        node.parentNode.insertBefore(document.createTextNode(macAddressMatch[0]), node);
+                        node.textContent = afterText;
+                        console.log(node.parentNode.childNodes);
+                        continue;
+                    }
+                }
+
                 const formatted = macAddressMatch[0].toUpperCase().replace(/[^A-F\d]/g, "").replace(/(.{2})/g, ":$1").substring(1);
                 const macSpan = document.createElement("span");
                 macSpan.classList.add(`${CSS_PREFIX}-smart-text-span`, `${CSS_PREFIX}-smart-text-mac-address`);
                 macSpan.setAttribute(`data-${CSS_PREFIX}-mac-address`, formatted);
-                macSpan.innerHTML = `<input value="${formatted}" readonly/><span><span>${macAddressMatch[0]}</span><ul class="${CSS_PREFIX}-smart-text-popup dropdown-menu"><li>MAC Address</li><li class="${CSS_PREFIX}-mac-address-oui" style="font-style:italic">Loading OUIs...</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="_blank" href="https://${NETDB_HOST}/fs_node_result?display_order.hardware_address=1&display_order.object=2&display_order.ip_address=3&display_order.node_state=4&display_order.make_and_model=5&display_order.os=6&display_order.department=7&display_order.user=8&column=Name&direction=ascending&purge=&hardware_address=${formatted}">NetDB</a></li><li><a target="_blank" href="http://day.stanford.edu:9696/manage/dhcplog/check_db?input=${formatted}">DHCP Log</a></li><li><a target="_blank" href="https://archer.stanford.edu/webacs/welcomeAction.do#pageId=full_search_pageId&query=${encodeURIComponent(formatted)}&forceLoad=true">Cisco Prime</a></li><li><a target="_blank" href="https://mydevices.stanford.edu/group/mydevices?${encodeURIComponent(`${CSS_PREFIX}-search-mac`)}=${encodeURIComponent(formatted)}">MyDevices</a></li><li><a target="_blank" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
+                macSpan.innerHTML = `<input value="${formatted}" readonly/><span><span class="${CSS_PREFIX}-smart-text-anchor-text">${macAddressMatch[0]}</span><ul class="${CSS_PREFIX}-smart-text-popup dropdown-menu"><li>MAC Address</li><li class="${CSS_PREFIX}-mac-address-oui" style="font-style:italic">Loading OUIs...</li><li><button class="btn ${CSS_PREFIX}-smart-text-copy">Copy</button></li><li>Search in:</li><li><ul><li><a target="_blank" href="https://${NETDB_HOST}/fs_node_result?display_order.hardware_address=1&display_order.object=2&display_order.ip_address=3&display_order.node_state=4&display_order.make_and_model=5&display_order.os=6&display_order.department=7&display_order.user=8&column=Name&direction=ascending&purge=&hardware_address=${formatted}">NetDB</a></li><li><a target="_blank" href="http://day.stanford.edu:9696/manage/dhcplog/check_db?input=${formatted}">DHCP Log</a></li><li><a target="_blank" href="https://archer.stanford.edu/webacs/welcomeAction.do#pageId=full_search_pageId&query=${encodeURIComponent(formatted)}&forceLoad=true">Cisco Prime</a></li><li><a target="_blank" href="https://mydevices.stanford.edu/group/mydevices?${encodeURIComponent(`${CSS_PREFIX}-search-mac`)}=${encodeURIComponent(formatted)}">MyDevices</a></li><li><a target="_blank" href="https://iprequest.stanford.edu/iprequest/process/search.jsp?ipaddr=&macaddress=${encodeURIComponent(formatted)}&search=0&sort=UPPER%28lastname%29%2C+UPPER%28firstname%29">IPRequest</a></li></ul></li></ul></span>`;
 
                 macSpan.addEventListener("click", e => e.stopPropagation());
 
                 let input = macSpan.firstElementChild;
+
+                const anchorText = macSpan.querySelector(`.${CSS_PREFIX}-smart-text-anchor-text`);
 
                 const OUISpan = macSpan.querySelector(`.${CSS_PREFIX}-mac-address-oui`);
                 OUIsPopulated.then(function(OUIs) {
                     const OUI = getOUI(OUIs, formatted);
                     if (OUI === null) {
                         OUISpan.textContent = "Unregistered OUI";
+                        OUISpan.style.color = "#C00";
+                        anchorText.style.color = "#C00";
+                        // Adds a "!" icon before a MAC address with an unregistered OUI so the
+                        // person knows something is wrong with it.
+                        anchorText.innerHTML = `<svg class="${CSS_PREFIX}-smart-text-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"/></svg>` + anchorText.innerHTML;
                     } else {
                         OUISpan.textContent = `OUI: ${OUI}`;
                         OUISpan.style.fontStyle = "initial";
@@ -284,6 +313,13 @@ function replaceSmartText(node) {
             }
             replaceSmartText(root);
         } else {
+            // Make <A> open in a new tab instead of on the same page. This isn't really "smart
+            // text", but it just makes it a lot easier when there are links in tickets.
+            try {
+                if (node.nodeName == "A" && new URL(node.href).hostname != location.hostname) {
+                    node.target = "_blank";
+                }
+            } catch (e) { /* pass */ }
             for (let i = node.childNodes.length - 1; i >= 0; i--) {
                 replaceSmartText(node.childNodes[i]);
             }
