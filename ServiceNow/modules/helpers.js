@@ -377,13 +377,13 @@ function replaceTextareaValue(data, value, carets) {
         const replacementValue = value.substring(startIndex, value.length - endIndex);
 
         data.suppressInputs = true;
-        if (insertHTMLAllowed) {
+        if (insertHTMLAllowed && document.activeElement == data.element) {
             data.element.setSelectionRange(startIndex, data.element.value.length - endIndex);
 
             // We set the textarea's value using insertHTML to allow for undoing/redoing, and
             // because insertHTML seems to perform much faster than insertText in some browsers.
             hasBeenReplaced = document.execCommand("insertHTML", false, escapeHTML(replacementValue) + (replacementValue[replacementValue.length - 1] == "\n" ? "<br>" : ""));
-        } else if (insertTextAllowed) {
+        } else if (insertTextAllowed && document.activeElement == data.element) {
             data.element.setSelectionRange(startIndex, data.element.value.length - endIndex);
 
             // Fall back to insertText if insertHTML is not enabled (Firefox).

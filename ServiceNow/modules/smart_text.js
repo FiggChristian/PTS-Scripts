@@ -1,5 +1,5 @@
 const { CSS_PREFIX, NETDB_HOST } = require("./constants.js");
-const { waitForElements } = require("./helpers.js");
+const { waitForElements, turnNoIndexInto } = require("./helpers.js");
 const { SMART_TEXT: SMART_TEXT_STYLES } = require("./styles.js");
 const events = require("./events.js");
 
@@ -130,25 +130,40 @@ function replaceSmartText(node) {
 
             if (firstMatch == macAddressMatch) {
                 // Links sometimes ave random numbers in them that look like they could be a MAC
-                // address, but are usually just random numbers as part of the link. To prevent
-                // those from getting highlighted, we check if the parent of this text node is an
-                // "<A>" element, and if there is more text inside the text node other than just the
-                // MAC address numbers.
+                // address, but are usually just random numbers as part of the link. To check if
+                // that's the case, we look at the the location in the text where the MAC address
+                // is. We check for a space before and after the MAC address and then check if that
+                // "word" that the MAC address is in is a URL.
 
-                // Check if parent is <a>.
-                if (node.parentNode.nodeType == Node.ELEMENT_NODE && node.parentNode.nodeName == "A") {
-                    // Check if there's other text in the node.
-                    const beforeText = node.textContent.substring(0, macAddressMatch.index);
-                    const afterText = node.textContent.substring(macAddressMatch.index + macAddressMatch[0].length);
-                    if ((beforeText + afterText).trim()) {
-                        // Instead of replacing this with a smart-text node, we replace it with a
-                        // generic text node and move on to the next text node.
-                        node.parentNode.insertBefore(document.createTextNode(beforeText), node);
-                        node.parentNode.insertBefore(document.createTextNode(macAddressMatch[0]), node);
-                        node.textContent = afterText;
-                        console.log(node.parentNode.childNodes);
-                        continue;
-                    }
+                const prevWhiteSpaceIndex = Math.max(
+                    0,
+                    turnNoIndexInto(0, node.textContent.lastIndexOf(" ", macAddressMatch.index)),
+                    turnNoIndexInto(0, node.textContent.lastIndexOf("\n", macAddressMatch.index)),
+                    turnNoIndexInto(0, node.textContent.lastIndexOf("\t", macAddressMatch.index))
+                );
+                const nextWhiteSpaceIndex = Math.min(
+                    node.textContent.length,
+                    turnNoIndexInto(Infinity, node.textContent.indexOf(" ", macAddressMatch.index + macAddressMatch[0].length)),
+                    turnNoIndexInto(Infinity, node.textContent.indexOf("\n", macAddressMatch.index + macAddressMatch[0].length)),
+                    turnNoIndexInto(Infinity, node.textContent.indexOf("\t", macAddressMatch.index + macAddressMatch[0].length))
+                );
+
+                // Get the entire "word" the MAC address is in. In most cases, it's just the MAC
+                // address on its own, or it's a URL.
+                const macWord = node.textContent.substring(prevWhiteSpaceIndex, nextWhiteSpaceIndex);
+                // Check if it's a valid URL by using the URL builtin constructor.
+                let isURL = false;
+                try {
+                    new URL(macWord);
+                    isURL = true;
+                } catch (e) {}
+                // If this MAC address looks like it's in a URL, we don't highlight it. Instead, we
+                // keep it as-is in its own text node.
+                if (isURL) {
+                    node.parentNode.insertBefore(document.createTextNode(node.textContent.substring(0, macAddressMatch.index)), node);
+                    node.parentNode.insertBefore(document.createTextNode(macAddressMatch[0]), node);
+                    node.textContent = node.textContent.substring(macAddressMatch.index + macAddressMatch[0].length);
+                    continue;
                 }
 
                 const formatted = macAddressMatch[0].toUpperCase().replace(/[^A-F\d]/g, "").replace(/(.{2})/g, ":$1").substring(1);

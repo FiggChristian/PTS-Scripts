@@ -113,11 +113,11 @@ marked.use({
             name: "autoStanfordLink",
             level: "inline",
             start: function(src) {
-                const match = src.match(/(([a-zA-Z0-9\-]+\.?)+\.|)stanford\.edu(\/[^\s<]*|(?!\B))/i);
+                const match = src.match(/(([a-zA-Z0-9\-]+\.)+\.|)stanford\.edu(\/[^\s<]*|(?!\B))/i);
                 return match ? match.index : src.length;
             },
             tokenizer: function(src, tokens) {
-                const cap = /^(([a-zA-Z0-9\-]+\.?)+\.|)stanford\.edu(\/[^\s<]*|(?!\B))/i.exec(src)
+                const cap = /^(([a-zA-Z0-9\-]+\.)+\.|)stanford\.edu(\/[^\s<]*|(?!\B))/i.exec(src)
                 if (cap) {
                     let text, href, prevCapZero;
                     do {
@@ -850,7 +850,7 @@ function parseMarkdown(text) {
     }
 
     // Now we've built out both penalty arrays and all that's left is to go forwards through them
-    // and build ut the shortened string.
+    // and build out the shortened string.
     let shortenedText = "";
     // Start outside of a code block by setting to false to being with.
     let isInsideCodeBlock = false;
