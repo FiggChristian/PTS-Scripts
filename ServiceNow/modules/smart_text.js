@@ -154,8 +154,14 @@ function replaceSmartText(node) {
                 // Check if it's a valid URL by using the URL builtin constructor.
                 let isURL = false;
                 try {
-                    new URL(macWord);
-                    isURL = true;
+                    const url = new URL(macWord); // Check if value can be parsed as a URL.
+                    // Make sure this is a "normal" URL. This means other URL protocols like
+                    // "chrome:" or "data:" will not be counted as URLs, which can create some false
+                    // negatives, but this also prevents MAC addresses from being counted as a URL.
+                    // "AB:CD:EF:12:34:56" for example can be read as a URL with protocol "ab:",
+                    // which would result in false positives, and this happens way more often since
+                    // no one really sends non-http(s) URLs anyway.
+                    isURL = url.protocol == "https:" || url.protocol == "http:" || url.protocol == "file:";
                 } catch (e) {}
                 // If this MAC address looks like it's in a URL, we don't highlight it. Instead, we
                 // keep it as-is in its own text node.
