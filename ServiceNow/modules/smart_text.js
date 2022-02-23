@@ -135,22 +135,47 @@ function replaceSmartText(node) {
                 // is. We check for a space before and after the MAC address and then check if that
                 // "word" that the MAC address is in is a URL.
 
+                // `preText` is all the text inside any text nodes that precede the current text
+                // node. If there's a link such as https://example.com/a1b2c3d4e5f6-a1b2c3d4e5f6, it
+                // has two "MAC addresses" in it. The first one will be detected and not replaced
+                // with smart text. Instead it gets replaced with its own text node so we can move
+                // on to the next thing. The text nodes after finding it and replacing it will be:
+                // "https://example.com/",
+                // "a1b2c3d4e5f6", and
+                // "-a1b2c3d4e5f6".
+                // The next text node after will be looked at, and the second MAC address will be
+                // seen as well. Since that text node's content is only "-a1b2c3d4e5f6", we won't
+                // recognize that as a URL because the URL has been broken up into multiple text
+                // nodes, but we still *do* want to to recognize that it's just a second MAC address
+                // in a URL. `preText` is filled with all the text content that precedes the current
+                // text node. In that case, it would be "https://example.com/a1b2c3d4e5f6". When we
+                // concatenate it with the text node's content, we get the full URL back as one
+                // contiguous string, and we can detect that the entire string is in fact a URL.
+                let preText = "";
+                for (
+                    let preNode = node.previousSibling;
+                    preNode?.nodeType == Node.TEXT_NODE;
+                    preNode = preNode.previousSibling
+                ) {
+                    preText = preNode.textContent + preText;
+                }
+
                 const prevWhiteSpaceIndex = Math.max(
                     0,
-                    turnNoIndexInto(0, node.textContent.lastIndexOf(" ", macAddressMatch.index)),
-                    turnNoIndexInto(0, node.textContent.lastIndexOf("\n", macAddressMatch.index)),
-                    turnNoIndexInto(0, node.textContent.lastIndexOf("\t", macAddressMatch.index))
+                    turnNoIndexInto(0, (preText + node.textContent).lastIndexOf(" ",  macAddressMatch.index + preText.length)),
+                    turnNoIndexInto(0, (preText + node.textContent).lastIndexOf("\n", macAddressMatch.index + preText.length)),
+                    turnNoIndexInto(0, (preText + node.textContent).lastIndexOf("\t", macAddressMatch.index + preText.length))
                 );
                 const nextWhiteSpaceIndex = Math.min(
-                    node.textContent.length,
-                    turnNoIndexInto(Infinity, node.textContent.indexOf(" ", macAddressMatch.index + macAddressMatch[0].length)),
-                    turnNoIndexInto(Infinity, node.textContent.indexOf("\n", macAddressMatch.index + macAddressMatch[0].length)),
-                    turnNoIndexInto(Infinity, node.textContent.indexOf("\t", macAddressMatch.index + macAddressMatch[0].length))
+                    node.textContent.length + preText.length,
+                    turnNoIndexInto(Infinity, (preText + node.textContent).indexOf(" ",  macAddressMatch.index + macAddressMatch[0].length + preText.length)),
+                    turnNoIndexInto(Infinity, (preText + node.textContent).indexOf("\n", macAddressMatch.index + macAddressMatch[0].length + preText.length)),
+                    turnNoIndexInto(Infinity, (preText + node.textContent).indexOf("\t", macAddressMatch.index + macAddressMatch[0].length + preText.length))
                 );
 
                 // Get the entire "word" the MAC address is in. In most cases, it's just the MAC
                 // address on its own, or it's a URL.
-                const macWord = node.textContent.substring(prevWhiteSpaceIndex, nextWhiteSpaceIndex);
+                const macWord = (preText + node.textContent).substring(prevWhiteSpaceIndex, nextWhiteSpaceIndex);
                 // Check if it's a valid URL by using the URL builtin constructor.
                 let isURL = false;
                 try {
