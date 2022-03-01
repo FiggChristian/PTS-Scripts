@@ -602,8 +602,8 @@ const REPLACEMENTS = [
             "icon.mydevices.compliant",
             "icon.my_devices.compliant"
         ],
-        value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-not_compliant.svg" alt=""/>[/code]`,
-        description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-not_compliant.svg" alt="green checkmark icon"/>"`,
+        value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-compliant.svg" alt=""/>[/code]`,
+        description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-compliant.svg" alt="green checkmark icon"/>"`,
         autoFillerVisibility: true
     },
     {
@@ -628,8 +628,8 @@ const REPLACEMENTS = [
             "icon.my_devices.incompliant",
             "icon.my_devices.noncompliant"
         ],
-        value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-compliant.svg" alt=""/>[/code]`,
-        description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-compliant.svg" alt="red X icon"/>"`,
+        value: `[code]<img style="height:1em;vertical-align:-.15em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-not_compliant.svg" alt=""/>[/code]`,
+        description: `Inserts a "<img style="height:1em" src="https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/main/.github/assets/mydevices-not_compliant.svg" alt="red X icon"/>"`,
         autoFillerVisibility: true
     },
     {
