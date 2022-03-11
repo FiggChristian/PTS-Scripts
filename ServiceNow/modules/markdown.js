@@ -113,11 +113,12 @@ marked.use({
             name: "autoStanfordLink",
             level: "inline",
             start: function(src) {
-                const match = src.match(/(([a-zA-Z0-9\-]+\.)+\.|)stanford\.edu(\/[^\s<]*|(?!\B))/i);
+                const match = src.match(/([a-zA-Z0-9\-]+\.)*stanford\.edu(\/[^\s<]*|(?!\B))/i);
                 return match ? match.index : src.length;
             },
             tokenizer: function(src, tokens) {
-                const cap = /^(([a-zA-Z0-9\-]+\.)+\.|)stanford\.edu(\/[^\s<]*|(?!\B))/i.exec(src)
+                console.log(src);
+                const cap = /^([a-zA-Z0-9\-]+\.)*stanford\.edu(\/[^\s<]*|(?!\B))/i.exec(src)
                 if (cap) {
                     let text, href, prevCapZero;
                     do {
@@ -177,7 +178,7 @@ marked.use({
             name: "formTable",
             level: "block",
             tokenizer: function(src, tokens) {
-                const cap = /^(?!\n)(?:.*?:\s.*?(?:\n.+)*?)(?:\n(?!  |\t).*?:\s.*?(?:\n.+)*?){2,}(?=$|\n$|\n\n)/.exec(src);
+                const cap = /^(?!\n)(?:(?:[^.]|\.\S)*?:\s.*?(?:\n.+)*?)(?:\n(?!  |\t).*?:\s.*?(?:\n.+)*?){2,}(?=$|\n$|\n\n)/.exec(src);
                 if (cap) {
                     const rows = [];
                     let newSrc = src.trimLeft();
