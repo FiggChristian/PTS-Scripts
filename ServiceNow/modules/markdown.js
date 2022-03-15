@@ -117,7 +117,6 @@ marked.use({
                 return match ? match.index : src.length;
             },
             tokenizer: function(src, tokens) {
-                console.log(src);
                 const cap = /^([a-zA-Z0-9\-]+\.)*stanford\.edu(\/[^\s<]*|(?!\B))/i.exec(src)
                 if (cap) {
                     let text, href, prevCapZero;
@@ -178,7 +177,7 @@ marked.use({
             name: "formTable",
             level: "block",
             tokenizer: function(src, tokens) {
-                const cap = /^(?!\n)(?:(?:[^.]|\.\S)*?:\s.*?(?:\n.+)*?)(?:\n(?!  |\t).*?:\s.*?(?:\n.+)*?){2,}(?=$|\n$|\n\n)/.exec(src);
+                const cap = /^(?!\n)(?:(?:[^.\n]|\.\S)*?:\s.*?(?:\n.+)*?)(?:\n(?! |\t).*?:\s.*?(?:\n.+)*?){2,}(?=$|\n$|\n\n)/.exec(src);
                 if (cap) {
                     const rows = [];
                     let newSrc = src.trimLeft();
@@ -279,7 +278,7 @@ module.exports.init = function() {
     // and the ticket is saved as expected. Replacing the value with the Markdown escaped value
     // allows us to submit as normal, and have ServiceNow read the textarea as having Markdown.
     waitForElements(
-        `[id*=sysverb_update]:not([data-${CSS_PREFIX}-save-button-processed]),button.activity-submit:not([data-${CSS_PREFIX}-save-button-processed]),button[data-action="save"]:not([data-${CSS_PREFIX}-save-button-processed])`,
+        `[id*=sysverb_update]:not([data-${CSS_PREFIX}-save-button-processed]),[id*=sysverb_insert]:not([data-${CSS_PREFIX}-save-button-processed]),button.activity-submit:not([data-${CSS_PREFIX}-save-button-processed]),button[data-action="save"]:not([data-${CSS_PREFIX}-save-button-processed])`,
         function(buttons) {
             for (const button of buttons) {
                 button.setAttribute(`data-${CSS_PREFIX}-save-button-processed`, "true");
@@ -400,6 +399,10 @@ function togglePreviewTextarea(textarea, e) {
 
 function replaceTextareaValues() {
     const textareas = [
+        document.getElementById("incident.comments"),
+        document.getElementById("incident.work_notes"),
+        document.getElementById("ticket.comments"),
+        document.getElementById("ticket.work_notes"),
         document.getElementById("activity-stream-work_notes-textarea"),
         document.getElementById("activity-stream-comments-textarea"),
         document.getElementById("activity-stream-textarea"),

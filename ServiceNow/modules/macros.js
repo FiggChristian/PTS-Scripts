@@ -103,7 +103,7 @@ const MACROS = [
                 Is this a primary or additional TSO: ${CURSOR()}
                 Customer phone: ${CURSOR(REPLACEMENT_START_DELIMITER + "ticket.requester.number" + REPLACEMENT_END_DELIMITER)}
                 Customer email: ${CURSOR(REPLACEMENT_START_DELIMITER + "ticket.requester.email" + REPLACEMENT_END_DELIMITER)}
-                Customer affiliation: ${CURSOR()}
+                Customer affiliation: ${CURSOR("Student")}
                 Ethernet MAC address of device: ${CURSOR()}
                 NetDB status: ${CURSOR("Good")}
                 NetDB date last changed: ${CURSOR()}
@@ -314,7 +314,7 @@ const MACROS = [
             additional_comments: `
                 Hi ${REPLACEMENT_START_DELIMITER}ticket.requester.name.first${REPLACEMENT_END_DELIMITER},
 
-                UIT has informed us that one of your devices ${CURSOR(`<!-- optionally provide more information like the MAC address here  -->`)} has been generating excessive DNS queries. Do you have any idea why that might be happening? This can usually be caused by doing something out of the ordinary like running a server on the computer, downloading a large data set, etc. Using your computer as normal for tasks like Zoom, browsing the internet, etc. generally shouldn't have any issues. If you are aware of your computer recently doing anything out of the ordinary, please let us know so we know that this was a one-time occurrence. Otherwise, we can go ahead and make a small change on our end to make sure this issue is resolved in the future (and this shouldn't have any noticeable effect on your computer), but we just wanted to reach out to let you know and inquire as to whether you know of why that might be happening before making that change. 
+                UIT has informed us that one of your devices ${CURSOR(`<!-- optionally provide more information like the MAC address here  -->`)} has been generating excessive DNS queries. Would you happen to have any idea why that might be happening? This can usually be caused by doing something out of the ordinary like running a server on the computer, downloading a large data set, etc. Using your computer as normal for tasks like Zoom, browsing the internet, etc. generally shouldn't have any issues. If you are aware of your computer recently doing anything out of the ordinary, please let us know so we know that this was a one-time occurrence. Otherwise, we can go ahead and make a small change on our end to make sure this issue is resolved in the future (and this shouldn't have any noticeable effect on your computer), but we just wanted to reach out to let you know and inquire as to whether you know of why that might be happening before making that change.
 
                 Please let us know if you have questions or issues. 
 
@@ -785,8 +785,8 @@ module.exports.init = function() {
         // Get a list of fields we want to change.
         const fields = Object.keys(macro.fields);
 
-        // If we want to show both additional comments and work notes, we may have to toggle the view
-        // for both.
+        // If we want to show both additional comments and work notes, we may have to toggle the
+        // view for both.
         if ("additional_comments" in macro.fields && "work_notes" in macro.fields) {
             const showAll = document.querySelector("#single-input-journal-entry button.icon-stream-all-input");
             if (showAll) showAll.click();
@@ -826,6 +826,8 @@ module.exports.init = function() {
 
             if (key == "additional_comments") {
                 const elements = [
+                    document.getElementById("incident.comments"),
+                    document.getElementById("ticket.comments"),
                     document.getElementById("activity-stream-comments-textarea"),
                     document.querySelector("#activity-stream-textarea[aria-label*='Additional comments']"),
                     document.getElementById("sc_task.parent.comments")
@@ -853,6 +855,8 @@ module.exports.init = function() {
             } else if (key == "work_notes") {
                 // Do the same as above for additional_comments.
                 const elements = [
+                    document.getElementById("incident.work_notes"),
+                    document.getElementById("ticket.work_notes"),
                     document.getElementById("activity-stream-work_notes-textarea"),
                     document.querySelector("#activity-stream-textarea[aria-label*='Work notes']")
                 ];
