@@ -398,6 +398,16 @@ module.exports.init = function() {
             }
         }
     );
+
+    waitForElements(
+        `.doctype-stream.form-stream:not([data-${CSS_PREFIX}-smart-text-searched])`,
+        function(streams) {
+            for (const stream of streams) {
+                stream.setAttribute(`data-${CSS_PREFIX}-smart-text-searched`, "true");
+                stream.style.overflow = "visible";
+            }
+        }
+    );
 }
 
 

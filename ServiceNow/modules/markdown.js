@@ -6,6 +6,19 @@ const { addToSubBar } = require("./textarea_subbar.js");
 const { SMART_TEXT: SMART_TEXT_STYLES, REPLACEMENT_SUBSTYLES } = require("./styles.js");
 const events = require("./events.js");
 
+/**
+ * @typedef {{ type: string, raw: string, [key: string]: any }} MarkedToken
+ */
+/**
+ * @typedef {object} MarkedExtension
+ * @property {string} name
+ * @property {"block"|"inline"} level
+ * @property {(src: string) => (number | false)} start
+ * @property {(src: string, tokens: Array<MarkedToken>) => (MarkedToken | false)} tokenizer
+ * @property {(token: MarkedToken) => (string | false)} renderer
+ * @property {Array<string>} [childTokens]
+ */
+
 marked.use({
     tokenizer: {
         // Disable HTML block-level elements so that they are treated as normal paragraphs instead.
@@ -75,6 +88,7 @@ marked.use({
             return text.replace(/\n/g, "[code]<br/>[/code]");
         }
     },
+    /** @type {Array<MarkedExtension>} */
     extensions: [
         // This extension ensures [code][/code] blocks are kept intact. "[code][/code](link)"
         // for example would be parsed as "[code]" followed by a link "[/code](link)", so this
@@ -177,16 +191,19 @@ marked.use({
             name: "formTable",
             level: "block",
             tokenizer: function(src, tokens) {
-                const cap = /^(?!\n)(?:(?:[^.\n]|\.\S)*?:\s.*?(?:\n.+)*?)(?:\n(?! |\t).*?:\s.*?(?:\n.+)*?){2,}(?=$|\n$|\n\n)/.exec(src);
+                const cap = /^(?!\n)(?:(?:[^.\n]|\.\S)*?:(?:[^\S\n].+?|[^\S\n]*?)(?:\n.+)*?)(?:\n(?! |\t).*?:(?:[^\S\n].+?|[^\S\n]*?)(?:\n.+)*?){2,}(?=\n?$|\n\n)/.exec(src);
                 if (cap) {
                     const rows = [];
                     let newSrc = src.trimLeft();
                     while (newSrc) {
-                        const match = /^(?:.*?:\s.*?(?:\n.+)*?)(?=\n(?!  |\t).*?:\s.*?(?:\n.+)*?|\n\n|$)/.exec(newSrc);
+                        const match = /^(?:.*?:(?:[^\S\n].+?|[^\S\n]*?)(?:\n.+)*?)(?=\n(?!  |\t).*?:([^\S\n].+?|[^\S\n]*?)(?:\n.+)*?|\n\n|\n?$)/.exec(newSrc);
                         if (!match) break;
                         const row = match[0];
                         rows.push(row);
-                        newSrc = newSrc.substring(row.length).trimLeft();
+                        newSrc = newSrc.substring(row.length);
+                        // Break if there are two lines between these rows, indicating a break.
+                        if (/^\n[^\S\n]*\n/.test(newSrc)) break;
+                        newSrc = newSrc.trimStart();
                     }
 
                     const used = src.substring(0, src.length - newSrc.length);

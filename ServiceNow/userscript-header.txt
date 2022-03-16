@@ -5,12 +5,12 @@
 // @match       *://stanford.service-now.com/incident.do*
 // @match       *://stanford.service-now.com/sc_task.do*
 // @match       *://mydevices.stanford.edu/*
-// @version     2.0.8
+// @version     2.0.9
 // @description Adds macros, replacements, smart text, and Markdown support to ServiceNow.
 // @icon        https://stanford.service-now.com/stanford_favicon.png
 // @downloadURL https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/master/ServiceNow/service-now.user.js
 // @updateURL   https://raw.githubusercontent.com/FiggChristian/PTS-Scripts/master/ServiceNow/service-now.user.js
 // @supportURL  https://github.com/FiggChristian/PTS-Scripts/issues
-// @homepageURL https://github.com/FiggChristian/PTS-Scripts/
+// @homepageURL https://github.com/FiggChristian/PTS-Scripts/tree/main/ServiceNow
 // @run-at      document-end
 // ==/UserScript==
