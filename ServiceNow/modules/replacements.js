@@ -568,6 +568,7 @@ const REPLACEMENTS = [
     },
     {
         triggers: [
+            "phone_number.sts",
             "phone_number.pts",
             "phone_number.us",
             "phone_number.ours"
