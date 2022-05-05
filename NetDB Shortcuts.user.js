@@ -33,6 +33,59 @@ window.addEventListener("keydown", function(e) {
     }
 }();
 
+// Create Node History shortcut by Record ID.
+!function() {
+    "use strict";
+    let tds = document.querySelectorAll("td");
+    for (let td of tds) {
+        if (td.innerText.trim() == "Record ID") {
+            let container = td.nextElementSibling.nextElementSibling;
+            let id = container.firstElementChild;
+            let link = document.createElement("a");
+            link.href = "https://netdb.stanford.edu/fs_log_result?display_order.date_of_action=1&display_order.record_name=2&display_order.ip_address=3&display_order.node_state=4&record_type=node&display_order.user=5&display_order.logaction=6&logaction=delete&logaction=update&logaction=insert&direction=descending&record_id=" + id.innerText;
+            link.target = "Node Record History"
+            link.innerText = "Node History"
+            container.insertBefore(link, id.nextSibling);
+            container.insertBefore(document.createTextNode(" "), link)
+        }
+    }
+}();
+
+// Highlight the MAC address the user searched for, if any.
+!function() {
+    "use strict";
+    try {
+        for (const [key, value] of new URLSearchParams(location.search)) {
+            if (key == "history") {
+                const prevURL = new URL(decodeURIComponent(value), "https://netdb.stanford.edu");
+                const isQuickSearch = prevURL.pathname == "/qsearch";
+                const isFullSearch = prevURL.pathname == "/fs_node_result";
+
+                let mac = null;
+                for (const [innerkey, innervalue] of new URLSearchParams(prevURL.search)) {
+                    if (isFullSearch && innerkey == "hardware_address") mac = decodeURIComponent(innervalue).replace(/[^A-Fa-f\d]/g, "").toLowerCase();
+                    if (isQuickSearch && innerkey == "search_string") mac = decodeURIComponent(innervalue).replace(/[^A-Fa-f\d]/g, "").toLowerCase();
+                    if (mac) break;
+                }
+
+                if (!mac || mac.length != 12) break;
+
+                let tds = document.querySelectorAll("td");
+                for (let td of tds) {
+                    if (td.innerText.trim() == "Hardware Address") {
+                        let container = td.nextElementSibling.nextElementSibling;
+                        let address = container.firstElementChild;
+                        if (address.innerText.replace(/[^A-Fa-f\d]/g, "").toLowerCase() == mac) {
+                            address.style.backgroundColor = "yellow";
+                        }
+                    }
+                }
+            }
+        }
+    } catch (e) { /* do nothing */ }
+}();
+
+
 // Hide IP addresses on Network pages.
 !function() {
     "use strict";
@@ -73,11 +126,4 @@ window.addEventListener("keydown", function(e) {
             tr.appendChild(td);
         }
     }
-}();
-
-!function() {
-    "use strict";
-    document.querySelector("form").addEventListener("submit", function() {
-        // this.action = "fs_node_result";
-    });
 }();
